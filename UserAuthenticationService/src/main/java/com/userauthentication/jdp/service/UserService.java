@@ -12,7 +12,7 @@ public interface UserService {
 
     void loginUser(String email, String password) throws Exception;
 
-    void deleteByUserId(Long userId);
+    void deleteByUserId(Long userId) throws Exception;
 
     void updateUserPassword(Long userId, String password);
 
