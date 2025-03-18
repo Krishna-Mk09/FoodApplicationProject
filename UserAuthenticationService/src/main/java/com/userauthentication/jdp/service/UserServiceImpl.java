@@ -4,7 +4,6 @@ import com.userauthentication.jdp.config.SecurityConfig;
 import com.userauthentication.jdp.entity.User;
 import com.userauthentication.jdp.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +33,7 @@ public class UserServiceImpl implements UserService {
             user.setPassword(encoder.passwordEncoder().encode(user.getPassword()));
             return userRepository.save(user);
         } catch (Exception e) {
-            log.error("Exception occurred while saving user details", ExceptionUtils.getStackTrace(e));
+            //  log.error("Exception occurred while saving user details", ExceptionUtils.getStackTrace(e));
             throw e;
         }
     }
@@ -57,21 +56,27 @@ public class UserServiceImpl implements UserService {
                 throw new Exception("Invalid email or password");
             }
         } catch (Exception e) {
-            log.error("Exception occurred while logging in", ExceptionUtils.getStackTrace(e));
+            //  log.error("Exception occurred while logging in", ExceptionUtils.getStackTrace(e));
             throw e;
         }
     }
 
 
     @Override
-    public void deleteByUserId(Long userId) {
+    public void deleteByUserId(Long userId) throws Exception {
+        if (userId == null) {
+            throw new Exception("User Id must not be null");
+        }
         userRepository.deleteByUserId(userId);
     }
 
     @Override
     @Transactional
-    public void updateUserPassword(Long userId, String password) {
-        userRepository.updateUserPassword(userId, password);
+    public void updateUserPassword(Long userId, String newPassword) {
+        if (userId == null || newPassword == null) {
+            throw new IllegalArgumentException("User Id and new password must not be null");
+        }
+        userRepository.updateUserPassword(userId, newPassword);
     }
 
     @Override
