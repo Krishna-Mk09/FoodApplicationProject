@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.2</version>
+        <version>3.4.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -30,7 +30,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>17</java.version>
-        <spring-boot.version>3.2.2</spring-boot.version>
+        <spring-boot.version>3.4.2</spring-boot.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version> <!-- (Latest Compatible with Spring Boot 3.2.2) -->
 
     </properties>

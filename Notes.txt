@@ -1,0 +1,8 @@
+
+Access Swagger UI
+Start your Spring Boot app and visit:
+🔹 Swagger UI:
+📌 http://localhost:8080/swagger-ui.html
+
+🔹 API Docs (JSON Format):
+📌 http://localhost:8080/v3/api-docs
