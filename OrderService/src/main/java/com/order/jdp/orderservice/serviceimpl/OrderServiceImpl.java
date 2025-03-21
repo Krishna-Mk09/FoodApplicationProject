@@ -7,6 +7,7 @@ import com.order.jdp.orderservice.entity.OrderItems;
 import com.order.jdp.orderservice.repository.OrderItemsRepository;
 import com.order.jdp.orderservice.repository.OrderRepository;
 import com.order.jdp.orderservice.service.OrderService;
+import com.order.jdp.orderservice.service.SequenceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,10 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderItemsRepository orderItemsRepository;
+
+    @Autowired
+    SequenceService sequenceService;
+
 
     @Override
     public List<OrderDTO> getAllOrders(long userId) {
@@ -51,6 +56,27 @@ public class OrderServiceImpl implements OrderService {
         Order save = null;
         log.info("OrderController.createOrder");
         try {
+
+            if (order.getOrderId() == 0L) {
+                long orderIdSeq = sequenceService.getSequenceByCustomer("ORDERS",
+                        order.getUserId());
+                if (!(orderIdSeq <= 0)) {
+                    order.setOrderId(orderIdSeq);
+                } else {
+                    log.error("Sequence generation failed for  ORDERS  object");
+                }
+                for (OrderItems orderItems : order.getOrderItems()) {
+                    orderItems.setOrderId(orderIdSeq);
+                    long orderItemIdSeq = sequenceService.getSequenceByCustomer("ORDER_ITEMS",
+                            order.getUserId());
+                    if (orderItemIdSeq > 0) {
+                        orderItems.setOrderItemId(orderItemIdSeq);
+                    } else {
+                        log.error("Sequence generation failed for  ORDER_ITEMS  object");
+                    }
+                }
+
+            }
             save = orderRepository.save(order);
             log.info("OrderController.createOrder: saveOrder: {}", save);
         } catch (Exception e) {
@@ -107,4 +133,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
+
 }
+
+
