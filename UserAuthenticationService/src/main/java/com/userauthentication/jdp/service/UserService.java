@@ -10,7 +10,7 @@ public interface UserService {
 
     User updateUser(User user , Long userId);
 
-    void loginUser(String email, String password) throws Exception;
+    String loginUser(String email, String password) throws Exception;
 
     void deleteByUserId(Long userId) throws Exception;
 

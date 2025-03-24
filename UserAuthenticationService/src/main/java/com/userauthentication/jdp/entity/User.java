@@ -2,7 +2,9 @@ package com.userauthentication.jdp.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -18,23 +20,31 @@ import java.util.List;
  * Created With: IntelliJ IDEA Ultimate Edition
  */
 
-@Data // Lombok will generate getters and setters for all fields
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Getter
 @Table(name = "USERS")
-@JsonIgnoreProperties({"orders", "addresses"}) // Prevents infinite loops in JSON responses
+@JsonIgnoreProperties({"attribute_1,attribute_2,attribute_3,attribute_4,attribute_5", "addresses"})
 public class User {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "USER_ID", updatable = false, nullable = false)
-    private Long userId;
-
-    @Column(name = "USER_NAME", unique = true, nullable = false, length = 50)
+    @Column(name = "USER_ID", nullable = false)
+    @JsonProperty("user_id")
+    private long userId;
+    @NotNull
+    @Column(name = "EMAIL", unique = true)
+    private String email;
+    @NotNull
+    @JsonProperty("phone_num")
+    @Column(name = "PHONE_NUM", unique = true)
+    private String phoneNum;
+    @NotNull
+    @Column(name = "USER_NAME", unique = true)
+    @JsonProperty("user_name")
     private String userName;
 
+    @NotNull
     @Column(name = "PASSWORD")
     private String password;
 
@@ -47,12 +57,6 @@ public class User {
     @Column(name = "EXP_DATE")
     private LocalDateTime expDate;
 
-    @Column(name = "EMAIL")
-    private String email;  // Ensure this is declared
-
-    @Column(name = "PHONE_NUM", length = 15)
-    private String phoneNum;
-
     @Column(name = "IMAGE")
     private byte[] image;
 
@@ -60,7 +64,7 @@ public class User {
     private String secondaryEmail;
 
     @Column(name = "CREATED_BY")
-    private BigDecimal createdBy;
+    private String createdBy;
 
     @Column(name = "CREATION_DATE")
     private LocalDateTime creationDate;
@@ -80,11 +84,5 @@ public class User {
     @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Address> address;
-
-    // Optional: Uncomment the following if you are using the Order entity
-    // @JsonManagedReference
-    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    // private List<Order> orders;
-
 
 }

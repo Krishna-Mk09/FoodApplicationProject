@@ -44,7 +44,7 @@ public class JwtFilter extends GenericFilterBean {
             return;
         }
 
-        String token = authHeader.substring(7);  // Extract token
+        String token = authHeader.substring(7);
 
         try {
             Claims claims = Jwts.parser()
