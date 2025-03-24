@@ -3,37 +3,29 @@ package com.userauthentication.jdp.service;
 import com.userauthentication.jdp.entity.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Value;
+import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-/*
- * Author Name : M.V.Krishna
- * Date: 27-02-2025
- * Created With: IntelliJ IDEA Ultimate Edition
- */
 
 @Service
+@Slf4j
 public class SecurityTokenGeneratorImpl implements SecurityTokenGenerator {
 
-    @Value("${jwt.secret}")
-    private String secretKey;
-
-    @Value("${jwt.expiration}")
-    private long expirationTime;
+    private static final String SECRET = "f5cvF5VLHWBYtzfS2pyWJdN4jZ62bWZ/tnbusFEzdGk=";
+    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private static final long EXPIRATION_TIME = 900000;
 
     @Override
-    public Map<String, String> generateToken(User user) {
-        String jwtToken = Jwts.builder().setSubject(user.getEmail()).
-                setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-                .signWith(SignatureAlgorithm.ES256, secretKey).compact();
-
-        Map<String, String> response = new HashMap<>();
-        response.put("token", jwtToken);
-        response.put("message", "User successfully logged in");
-        return response;
+    public String generateToken(User user) {
+        return Jwts.builder()
+                .setSubject(user.getEmail())
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
+                .compact();
     }
+
 }

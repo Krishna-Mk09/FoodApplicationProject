@@ -4,7 +4,10 @@ import com.userauthentication.jdp.config.SecurityConfig;
 import com.userauthentication.jdp.entity.User;
 import com.userauthentication.jdp.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,11 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final SecurityConfig encoder;
+    private final SecurityTokenGeneratorImpl SECURITY_TOKEN_GENERATOR;
+
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, SecurityConfig passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, SecurityConfig passwordEncoder, SecurityTokenGeneratorImpl securityTokenGenerator) {
         this.userRepository = userRepository;
         this.encoder = passwordEncoder;
+        SECURITY_TOKEN_GENERATOR = securityTokenGenerator;
     }
 
 
@@ -30,10 +36,24 @@ public class UserServiceImpl implements UserService {
             throw new Exception("User already exists");
         }
         try {
+            if (user.getUserId() == 0L) {
+//                long userSeqId = sequenceService.getSequenceByCustomer("USERS",
+//                        user.getUserId());
+                user.setUserId(12345667L);
+            } else {
+                log.error("Sequence generation failed for USERS Table");
+            }
+            user.setRole("USER");
+            user.setCreatedBy(user.getEmail());
+            user.setCreationDate(java.time.LocalDateTime.now());
+            user.setIsActive(true);
+            user.setExpDate(java.time.LocalDateTime.now().plusYears(20));
             user.setPassword(encoder.passwordEncoder().encode(user.getPassword()));
+            user.setNoOfLoginAttempts(1);
+            user.setFirstName(user.getEmail().substring(0, user.getEmail().indexOf("@")));
             return userRepository.save(user);
         } catch (Exception e) {
-            //  log.error("Exception occurred while saving user details", ExceptionUtils.getStackTrace(e));
+            log.error("Exception occurred while saving user details", ExceptionUtils.getStackTrace(e));
             throw e;
         }
     }
@@ -45,20 +65,23 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void loginUser(String email, String password) throws Exception {
+    public String loginUser(String email, String password) throws Exception {
+        String token = null;
         try {
             if (email == null || password == null) {
                 throw new Exception("Email and password must not be null");
             }
-
             User user = userRepository.findByEmail(email);
-            if (user == null || !encoder.passwordEncoder().matches(password, user.getPassword())) {
-                throw new Exception("Invalid email or password");
+            if (user != null && encoder.passwordEncoder().matches(password, user.getPassword())) {
+                token = this.SECURITY_TOKEN_GENERATOR.generateToken(user);
+                log.info("User token generated and returned");
+                return new ResponseEntity<>(token, HttpStatus.OK).getBody();
             }
         } catch (Exception e) {
-            //  log.error("Exception occurred while logging in", ExceptionUtils.getStackTrace(e));
+            log.error("Exception occurred while logging in", ExceptionUtils.getStackTrace(e));
             throw e;
         }
+        return token;
     }
 
 

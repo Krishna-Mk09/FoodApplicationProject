@@ -2,8 +2,6 @@ package com.userauthentication.jdp.service;
 
 import com.userauthentication.jdp.entity.User;
 
-import java.util.Map;
-
 /*
  * Author Name : M.V.Krishna
  * Date: 27-02-2025
@@ -11,6 +9,6 @@ import java.util.Map;
  */
 public interface SecurityTokenGenerator {
 
-    public Map<String, String> generateToken(User user);
+    String generateToken(User user);
 
 }
