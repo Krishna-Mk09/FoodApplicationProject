@@ -7,15 +7,42 @@ Start your Spring Boot app and visit:
 🔹 API Docs (JSON Format):
 📌 http://localhost:8080/v3/api-docs
 
-
-
  common in all service properties file
+
+
+
+=========================== Eureka parent ===========================================-
+
+@EnableEurekaServer
+
+<dependency>
+<groupId>org.springframework.cloud</groupId>
+<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+/dependency>
+
+
+server.port=8761
+eureka.instance.hostname=localhost
+eureka.client.register-with-eureka=false
+eureka.client.fetch-registry=false
+spring.security.user.name=food
+spring.security.user.password=food
+--------------------------------------------------------------------------------------
+----------------- Eureka Child -------------------------------------------------------
+
+@EnableDiscoveryClient
+
+<dependency>
+<groupId>org.springframework.cloud</groupId>
+<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+</dependency>
 
  eureka.client.enableJersey=false
  eureka.client.registerWithEureka=true
  eureka.client.fetchRegistry=true
  eureka.client.enabled=true
- --security
+ ======> security disable  <===========
+ eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+ ======> security enable  <===========
  eureka.client.service-url.defaultZone=http://user:pwd@localhost:8761/eureka/
- -security disable
-    eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+--------------------------------------------------------------------------------------
