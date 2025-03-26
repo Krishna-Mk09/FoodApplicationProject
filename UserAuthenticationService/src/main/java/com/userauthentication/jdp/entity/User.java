@@ -40,7 +40,7 @@ public class User {
     @Column(name = "PHONE_NUM", unique = true)
     private String phoneNum;
     @NotNull
-    @Column(name = "USER_NAME", unique = true)
+    @Column(name = "USER_NAME")
     @JsonProperty("user_name")
     private String userName;
 

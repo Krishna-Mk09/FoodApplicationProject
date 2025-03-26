@@ -3,6 +3,7 @@ package com.userauthentication.jdp.service;
 import com.userauthentication.jdp.entity.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,9 +15,11 @@ import java.util.Date;
 @Slf4j
 public class SecurityTokenGeneratorImpl implements SecurityTokenGenerator {
 
+
     private static final String SECRET = "f5cvF5VLHWBYtzfS2pyWJdN4jZ62bWZ/tnbusFEzdGk=";
-    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private static final long EXPIRATION_TIME = 900000;
+    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET));  // Use consistent key
+
+    private static final long EXPIRATION_TIME = 900000; // 15 minutes
 
     @Override
     public String generateToken(User user) {
@@ -27,5 +30,4 @@ public class SecurityTokenGeneratorImpl implements SecurityTokenGenerator {
                 .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
                 .compact();
     }
-
 }

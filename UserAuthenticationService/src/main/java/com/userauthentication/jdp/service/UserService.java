@@ -6,13 +6,13 @@ import java.util.Optional;
 
 public interface UserService {
 
-    User saveUser(User user) throws Exception;
+    String saveUser(User user) throws Exception;
 
     User updateUser(User user , Long userId);
 
     String loginUser(String email, String password) throws Exception;
 
-    void deleteByUserId(Long userId) throws Exception;
+    String deleteByUserId(Long userId) throws Exception;
 
     void updateUserPassword(Long userId, String password);
 

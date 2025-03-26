@@ -11,10 +11,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /*
  * Author Name : M.V.Krishna
@@ -37,13 +34,13 @@ public class UserController {
     @ApiOperation(value = "Saves users in to the database  ", notes = "Saves users in to the database  ")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "success")})
     @PostMapping("/registerUser")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody User user) throws Exception {
+    public ResponseEntity<String> registerUser(@Valid @RequestBody User user) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
         try {
             log.info("User Controller.registerUser: user: {}");
-            User savedUser = this.userService.saveUser(user);
-            log.info("User successfully saved with ID = {}", savedUser);
-            return new ResponseEntity<>("User Saved Successfully", HttpStatus.CREATED);
+            String savedUser = this.userService.saveUser(user);
+            log.info("User successfully saved with ID = {}");
+            return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
         } catch (Exception e) {
             log.error(" Exception occurred while saving user details {} ", ExceptionUtils.getStackTrace(e));
             throw new Exception(e.getMessage());
@@ -64,4 +61,19 @@ public class UserController {
             throw new Exception(e.getMessage());
         }
     }
+
+
+    @DeleteMapping("/deleteUser/{userId}")
+    public ResponseEntity<String> deleteUser(@Valid @PathVariable long userId) throws Exception {
+        log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
+        try {
+            log.info("User Controller.login: user: ");
+            String str = this.userService.deleteByUserId(userId);
+            return new ResponseEntity<>(str, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(" Exception occurred while user log in ", ExceptionUtils.getStackTrace(e));
+            throw new Exception(e.getMessage());
+        }
+    }
+
 }
