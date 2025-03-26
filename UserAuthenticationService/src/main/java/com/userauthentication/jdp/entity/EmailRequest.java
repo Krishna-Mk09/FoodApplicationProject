@@ -1,10 +1,14 @@
-package com.emailservice.jdp.EmailService.entity;
+package com.userauthentication.jdp.entity;
 
-import jakarta.persistence.Transient;
 import lombok.*;
 
-import java.util.Map;
+import java.time.LocalDateTime;
 
+/*
+ * Author Name : M.V.Krishna
+ * Date: 26-03-2025
+ * Created With: IntelliJ IDEA Ultimate Edition
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +21,6 @@ public class EmailRequest {
     private String userName;
     private String ipaddress;
     private String device;
-    private String dateAndTime;
-    @Transient
-    private Map<String, Object> templateModel;
+    private LocalDateTime dateAndTime;
+
 }

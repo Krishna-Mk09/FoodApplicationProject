@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Login Detected!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 550px;
+            margin: auto;
+            background: #ffffff;
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .details {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #ff6600;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #e65c00;
+        }
+        .footer {
+            font-size: 12px;
+            color: #777;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>New Login Detected</h2>
+    <p>Hello, <span th:text="${userName}"></span>!</p>
+    <p>A login to your account was detected with the following details:</p>
+
+    <div class="details">
+        <h2>Login Notification</h2>
+        <p><strong>Email:</strong> <span th:text="${EMAIL}"></span></p>
+        <p><strong>Device:</strong> <span th:text="${Device}"></span></p>
+        <p><strong>IP Address:</strong> <span th:text="${IP}"></span></p>
+        <p><strong>Date & Time:</strong> <span th:text="${DateAndTime}"></span></p>
+    </div>
+
+    <p>If this was you, no further action is needed.</p>
+    <p>If you did not log in, please <strong>reset your password immediately</strong> to secure your account.</p>
+
+    <a href="https://fap.support@gmail.com" class="button">Reset Password</a>
+
+    <p class="footer">
+        Need help? <a href="https://fap.support@gmail.com/support">Contact Support</a>
+    </p>
+</div>
+</body>
+</html>

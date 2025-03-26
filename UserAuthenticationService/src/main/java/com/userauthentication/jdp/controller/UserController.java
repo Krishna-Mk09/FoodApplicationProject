@@ -1,10 +1,11 @@
 package com.userauthentication.jdp.controller;
 
 import com.userauthentication.jdp.entity.User;
-import com.userauthentication.jdp.service.UserServiceImpl;
+import com.userauthentication.jdp.serviceImpl.UserServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -18,12 +19,11 @@ import org.springframework.web.bind.annotation.*;
  * Date: 27-02-2025
  * Created With: IntelliJ IDEA Ultimate Edition
  */
-@RestController
 @Slf4j
+@RestController
 @RequestMapping("/userAuthService")
 public class UserController {
     private final UserServiceImpl userService;
-
 
     @Autowired
     public UserController(UserServiceImpl userService) {
@@ -39,6 +39,8 @@ public class UserController {
         try {
             log.info("User Controller.registerUser: user: {}");
             String savedUser = this.userService.saveUser(user);
+
+
             log.info("User successfully saved with ID = {}");
             return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
         } catch (Exception e) {
@@ -49,11 +51,11 @@ public class UserController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@Valid @RequestBody User users) throws Exception {
+    public ResponseEntity<?> loginUser(@Valid @RequestBody User users,HttpServletRequest request) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
         try {
             log.info("User Controller.login: user: ");
-            String token = this.userService.loginUser(users.getEmail(), users.getPassword());
+            String token = this.userService.loginUser(users.getEmail(), users.getPassword(),request);
             log.info("User logged inn: user: ");
             return new ResponseEntity<>(token, HttpStatus.OK);
         } catch (Exception e) {

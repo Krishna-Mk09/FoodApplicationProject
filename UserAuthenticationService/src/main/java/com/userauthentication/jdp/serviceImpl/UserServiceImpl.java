@@ -1,16 +1,20 @@
-package com.userauthentication.jdp.service;
+package com.userauthentication.jdp.serviceImpl;
 
 import com.foodapplication.jdp.Common_Service.Service.SequenceService;
 import com.userauthentication.jdp.config.SecurityConfig;
+import com.userauthentication.jdp.entity.EmailRequest;
 import com.userauthentication.jdp.entity.User;
 import com.userauthentication.jdp.repository.UserRepository;
+import com.userauthentication.jdp.service.EmailClient;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -18,22 +22,24 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final SecurityConfig encoder;
     private final SecurityTokenGeneratorImpl SECURITY_TOKEN_GENERATOR;
+    private final EmailClient emailClient;
+    private final SequenceService sequenceService;
 
     @Autowired
-    private SequenceService sequenceService;
-
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, SecurityConfig passwordEncoder, SecurityTokenGeneratorImpl securityTokenGenerator) {
+    public UserServiceImpl(UserRepository userRepository, SecurityConfig passwordEncoder, SecurityTokenGeneratorImpl securityTokenGenerator, EmailClient emailClient, SequenceService sequenceService) {
         this.userRepository = userRepository;
         this.encoder = passwordEncoder;
         SECURITY_TOKEN_GENERATOR = securityTokenGenerator;
+        this.emailClient = emailClient;
+        this.sequenceService = sequenceService;
     }
 
 
     @Override
     public String saveUser(User user) throws Exception {
-        String status = null;
+        String status = "";
+        EmailRequest emailRequest = new EmailRequest();
+
         if (user == null || user.getEmail() == null || user.getPassword() == null) {
             status = "User details are incomplete";
             return status;
@@ -48,7 +54,7 @@ public class UserServiceImpl implements UserService {
         }
         try {
             if (user.getUserId() == 0L) {
-                long userSeqId = sequenceService.getSequenceByCustomer("USERS", user.getUserId());
+                long userSeqId = sequenceService.getSequenceByCustomer("USERS");
                 user.setUserId(userSeqId);
             } else {
                 log.error("Sequence generation failed for USERS Table");
@@ -64,6 +70,11 @@ public class UserServiceImpl implements UserService {
             userRepository.save(user);
             status = "User saved successfully";
             log.info("User saved successfully");
+            emailRequest.setSenderEmail(user.getEmail());
+            emailRequest.setSubject("Registration Acknowledgement");
+            emailRequest.setTemplateName("welcome-email");
+            emailRequest.setUserName(user.getUserName());
+            emailClient.sendEmail(emailRequest);
             return status;
         } catch (Exception e) {
             log.error("Exception occurred while saving user details", ExceptionUtils.getStackTrace(e));
@@ -78,8 +89,10 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public String loginUser(String email, String password) throws Exception {
+    public String loginUser(String email, String password, HttpServletRequest request) throws Exception {
         String token = null;
+        EmailRequest emailRequest = new EmailRequest();
+
         try {
             if (email == null || password == null) {
                 token = "Email and password must not be null";
@@ -93,13 +106,34 @@ public class UserServiceImpl implements UserService {
             if (user != null && encoder.passwordEncoder().matches(password, user.getPassword())) {
                 token = this.SECURITY_TOKEN_GENERATOR.generateToken(user);
                 log.info("User token generated and returned");
-                return new ResponseEntity<>(token, HttpStatus.OK).getBody();
+                Map<String, String> loginDetails = getLoginDetails(request);
+                emailRequest.setSenderEmail(user.getEmail());
+                emailRequest.setDevice(loginDetails.get("Device"));
+                emailRequest.setIpaddress(loginDetails.get("IP"));
+                emailRequest.setDateAndTime(java.time.LocalDateTime.now());
+                emailRequest.setTemplateName("login-detect");
+                emailRequest.setUserName(user.getUserName());
+                emailRequest.setSubject("Login Acknowledgement");
+                emailClient.sendEmail(emailRequest);
             }
         } catch (Exception e) {
             log.error("Exception occurred while logging in", ExceptionUtils.getStackTrace(e));
             throw e;
         }
         return token;
+    }
+
+
+    public Map<String, String> getLoginDetails(HttpServletRequest request) {
+        Map<String, String> loginDetails = new HashMap<>();
+        String ip = request.getHeader("X-Forwarded-For");
+        ip = (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) ? request.getRemoteAddr() : ip.split(",")[0];
+        if ("0:0:0:0:0:0:0:1".equals(ip)) {
+            ip = "127.0.0.1";
+        }
+        loginDetails.put("IP", ip);
+        loginDetails.put("Device", request.getHeader("User-Agent"));
+        return loginDetails;
     }
 
 

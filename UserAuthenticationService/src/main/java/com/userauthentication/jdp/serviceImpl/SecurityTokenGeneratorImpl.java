@@ -1,4 +1,4 @@
-package com.userauthentication.jdp.service;
+package com.userauthentication.jdp.serviceImpl;
 
 import com.userauthentication.jdp.entity.User;
 import io.jsonwebtoken.Jwts;
