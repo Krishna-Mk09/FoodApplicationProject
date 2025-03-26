@@ -1,5 +1,6 @@
 package com.userauthentication.jdp.service;
 
+import com.foodapplication.jdp.Common_Service.Service.SequenceService;
 import com.userauthentication.jdp.config.SecurityConfig;
 import com.userauthentication.jdp.entity.User;
 import com.userauthentication.jdp.repository.UserRepository;
@@ -18,6 +19,9 @@ public class UserServiceImpl implements UserService {
     private final SecurityConfig encoder;
     private final SecurityTokenGeneratorImpl SECURITY_TOKEN_GENERATOR;
 
+    @Autowired
+    private SequenceService sequenceService;
+
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, SecurityConfig passwordEncoder, SecurityTokenGeneratorImpl securityTokenGenerator) {
@@ -28,18 +32,24 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User saveUser(User user) throws Exception {
+    public String saveUser(User user) throws Exception {
+        String status = null;
         if (user == null || user.getEmail() == null || user.getPassword() == null) {
-            throw new Exception("User details are incomplete");
+            status = "User details are incomplete";
+            return status;
         }
-        if (this.userRepository.existsById(user.getUserId())) {
-            throw new Exception("User already exists");
+        if (userRepository.findByUserName(user.getUserName()) != null) {
+            status = "UserName Already Exists.Please Choose Another UserName";
+            return status;
+        }
+        if (userRepository.existsByEmailOrPhoneNum(user.getEmail(), user.getPhoneNum()) || this.userRepository.existsById(user.getUserId())) {
+            status = "User already exists with the given email, phone or ID";
+            return status;
         }
         try {
             if (user.getUserId() == 0L) {
-//                long userSeqId = sequenceService.getSequenceByCustomer("USERS",
-//                        user.getUserId());
-                user.setUserId(12345667L);
+                long userSeqId = sequenceService.getSequenceByCustomer("USERS", user.getUserId());
+                user.setUserId(userSeqId);
             } else {
                 log.error("Sequence generation failed for USERS Table");
             }
@@ -49,9 +59,12 @@ public class UserServiceImpl implements UserService {
             user.setIsActive(true);
             user.setExpDate(java.time.LocalDateTime.now().plusYears(20));
             user.setPassword(encoder.passwordEncoder().encode(user.getPassword()));
-            user.setNoOfLoginAttempts(1);
+            user.setNoOfLoginAttempts(0);
             user.setFirstName(user.getEmail().substring(0, user.getEmail().indexOf("@")));
-            return userRepository.save(user);
+            userRepository.save(user);
+            status = "User saved successfully";
+            log.info("User saved successfully");
+            return status;
         } catch (Exception e) {
             log.error("Exception occurred while saving user details", ExceptionUtils.getStackTrace(e));
             throw e;
@@ -69,9 +82,14 @@ public class UserServiceImpl implements UserService {
         String token = null;
         try {
             if (email == null || password == null) {
-                throw new Exception("Email and password must not be null");
+                token = "Email and password must not be null";
+                return token;
             }
             User user = userRepository.findByEmail(email);
+            if (user == null) {
+                token = "User not found. Please Register";
+                return token;
+            }
             if (user != null && encoder.passwordEncoder().matches(password, user.getPassword())) {
                 token = this.SECURITY_TOKEN_GENERATOR.generateToken(user);
                 log.info("User token generated and returned");
@@ -86,11 +104,12 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void deleteByUserId(Long userId) throws Exception {
+    public String deleteByUserId(Long userId) throws Exception {
         if (userId == null) {
             throw new Exception("User Id must not be null");
         }
-        userRepository.deleteByUserId(userId);
+        String user = userRepository.deleteByUserId(userId);
+        return user;
     }
 
     @Override
