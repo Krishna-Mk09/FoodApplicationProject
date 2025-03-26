@@ -17,7 +17,7 @@ public class EmailController {
     @Autowired
     private EmailService emailService;
 
-    @PostMapping("/send")
+    @PostMapping("/send-email")
     public ResponseEntity<String> sendEmail(@RequestBody EmailRequest request) {
         emailService.sendEmail(request);
         return ResponseEntity.ok("Email Sent Successfully");

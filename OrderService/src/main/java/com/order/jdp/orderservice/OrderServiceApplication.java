@@ -8,7 +8,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableAutoConfiguration
 @ComponentScan("com.foodapplication.jdp.Common_Service.Service")
 public class OrderServiceApplication {
 

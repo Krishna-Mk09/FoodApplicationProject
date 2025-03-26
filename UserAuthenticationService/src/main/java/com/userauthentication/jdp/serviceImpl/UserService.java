@@ -1,8 +1,7 @@
-package com.userauthentication.jdp.service;
+package com.userauthentication.jdp.serviceImpl;
 
 import com.userauthentication.jdp.entity.User;
-
-import java.util.Optional;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface UserService {
 
@@ -10,7 +9,7 @@ public interface UserService {
 
     User updateUser(User user , Long userId);
 
-    String loginUser(String email, String password) throws Exception;
+    String loginUser(String email, String password, HttpServletRequest request) throws Exception;
 
     String deleteByUserId(Long userId) throws Exception;
 

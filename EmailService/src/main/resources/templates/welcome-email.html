@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title class="welcome">Welcome to Food Application Platform Services</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .welcome{
+            color:#e74c3c;
+
+        }
+        .container {
+            max-width: 550px;
+            margin: auto;
+            background: #ffffff;
+            padding: 25px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Increased shadow for depth */
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #ff6600;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #e65c00;
+        }
+        .footer {
+            font-size: 12px;
+            color: #777;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Welcome, <span th:text="${username}"></span>!</h2>
+    <p>We're excited to have you on board at <strong>Food Application Platform Services</strong>!</p>
+    <p>Enjoy a seamless food ordering experience with top restaurants, fast delivery, and exclusive discounts.</p>
+
+    <p><strong>🚀 What's next?</strong></p>
+    <p>👉 Explore our menu and discover delicious meals.</p>
+    <p>👉 Track your orders in real-time.</p>
+    <p>👉 Earn rewards and special offers.</p>
+
+    <a href="https://yourdomain.com/login" class="button">Get Started</a>
+
+    <p class="footer">
+        If you did not sign up for this service, you can ignore this email. <br>
+        Need help? <a href="https://fap.Support@gmail.com/support">Contact Support</a>
+    </p>
+</div>
+</body>
+</html>
