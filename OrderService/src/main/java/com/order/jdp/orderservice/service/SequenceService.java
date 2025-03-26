@@ -1,9 +1,0 @@
-package com.order.jdp.orderservice.service;
-
-import org.springframework.stereotype.Repository;
-
-@Repository
-public interface SequenceService {
-    long getSequenceByCustomer(String tableName, long userId) throws Exception;
-
-}

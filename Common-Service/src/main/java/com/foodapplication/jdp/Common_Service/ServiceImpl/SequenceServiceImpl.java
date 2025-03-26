@@ -28,7 +28,7 @@ public class SequenceServiceImpl implements SequenceService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
-    public long getSequenceByCustomer(String tableName, long userId) throws Exception {
+    public long getSequenceByCustomer(String tableName) throws Exception {
         log.info("trying to generate sequence id value from repository");
         BigDecimal sequence = BigDecimal.ZERO;
         long newSequence;
