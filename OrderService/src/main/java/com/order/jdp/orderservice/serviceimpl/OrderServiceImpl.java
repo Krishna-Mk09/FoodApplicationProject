@@ -1,5 +1,6 @@
 package com.order.jdp.orderservice.serviceimpl;
 
+import com.foodapplication.jdp.Common_Service.Service.SequenceService;
 import com.order.jdp.orderservice.dto.OrderDTO;
 import com.order.jdp.orderservice.dto.OrderItemsDTO;
 import com.order.jdp.orderservice.entity.Order;
@@ -7,7 +8,6 @@ import com.order.jdp.orderservice.entity.OrderItems;
 import com.order.jdp.orderservice.repository.OrderItemsRepository;
 import com.order.jdp.orderservice.repository.OrderRepository;
 import com.order.jdp.orderservice.service.OrderService;
-import com.order.jdp.orderservice.service.SequenceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,8 +58,7 @@ public class OrderServiceImpl implements OrderService {
         try {
 
             if (order.getOrderId() == 0L) {
-                long orderIdSeq = sequenceService.getSequenceByCustomer("ORDERS",
-                        order.getUserId());
+                long orderIdSeq = sequenceService.getSequenceByCustomer("ORDERS");
                 if (!(orderIdSeq <= 0)) {
                     order.setOrderId(orderIdSeq);
                 } else {
@@ -67,8 +66,7 @@ public class OrderServiceImpl implements OrderService {
                 }
                 for (OrderItems orderItems : order.getOrderItems()) {
                     orderItems.setOrderId(orderIdSeq);
-                    long orderItemIdSeq = sequenceService.getSequenceByCustomer("ORDER_ITEMS",
-                            order.getUserId());
+                    long orderItemIdSeq = sequenceService.getSequenceByCustomer("ORDER_ITEMS");
                     if (orderItemIdSeq > 0) {
                         orderItems.setOrderItemId(orderItemIdSeq);
                     } else {
