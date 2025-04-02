@@ -25,7 +25,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable()) // Disabling CSRF for testing
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/userAuthService/registerUser","/userAuthService/login").permitAll() // Corrected endpoint
+                        auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll(). // Allow Swagger UI without authentication
+                                requestMatchers("/userAuthService/registerUser","/userAuthService/login").permitAll() // Corrected endpoint
                                 .requestMatchers(HttpMethod.GET, "/userAuthService/**").permitAll() // Allow public GET requests
                                 .requestMatchers(HttpMethod.POST, "/userAuthService/**").authenticated() // Require authentication for CREATE
                                 .requestMatchers(HttpMethod.PUT, "/userAuthService/**").authenticated() // Require authentication for UPDATE

@@ -7,6 +7,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
+@EnableAutoConfiguration
 public class RestaurantServiceApplication {
 
 	public static void main(String[] args) {
