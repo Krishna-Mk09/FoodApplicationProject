@@ -20,7 +20,7 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @PostMapping(value = "/createOrder" , produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping( value = "/createOrder" , produces = MediaType.APPLICATION_JSON_VALUE)
     public Order createOrder(@RequestBody Order order) {
         log.info("OrderController.createOrder");
         Order saveOrder = null;
