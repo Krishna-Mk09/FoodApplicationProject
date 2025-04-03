@@ -18,6 +18,8 @@ public class EmailRequest {
     private String ipaddress;
     private String device;
     private String dateAndTime;
+
+    private String otp;
     @Transient
     private Map<String, Object> templateModel;
 }

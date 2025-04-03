@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * Created With: IntelliJ IDEA Ultimate Edition
  */
 
-@FeignClient(name = "EmailService", url = "http://localhost:8085/api/email/")
+@FeignClient(name = "EmailService", url = "http://localhost:8081/emailService")
 public interface EmailClient {
     @PostMapping("/send-email")
     void sendEmail(@RequestBody EmailRequest emailRequest)throws Exception;

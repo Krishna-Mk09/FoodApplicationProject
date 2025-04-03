@@ -7,9 +7,11 @@ public interface UserService {
 
     String saveUser(User user) throws Exception;
 
-    User updateUser(User user , Long userId);
+    User updateUser(User user, Long userId);
 
     String loginUser(String email, String password, HttpServletRequest request) throws Exception;
+
+    String sendOtp(String email, HttpServletRequest request) throws Exception;
 
     String deleteByUserId(Long userId) throws Exception;
 
