@@ -2,7 +2,6 @@ package com.userauthentication.jdp.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,20 +20,11 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(12);
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()) // Disabling CSRF for testing
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll(). // Allow Swagger UI without authentication
-                                requestMatchers("/userAuthService/registerUser","/userAuthService/login").permitAll() // Corrected endpoint
-                                .requestMatchers(HttpMethod.GET, "/userAuthService/**").permitAll() // Allow public GET requests
-                                .requestMatchers(HttpMethod.POST, "/userAuthService/**").authenticated() // Require authentication for CREATE
-                                .requestMatchers(HttpMethod.PUT, "/userAuthService/**").authenticated() // Require authentication for UPDATE
-                                .requestMatchers(HttpMethod.DELETE, "/userAuthService/**").authenticated()
-                                .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
+        http.csrf(csrf -> csrf.disable()) // Disabling CSRF for API access
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/userAuthService/registerUser", "/userAuthService/login", "/userAuthService/send-otp/**", "/api/email/send-email", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll().anyRequest().authenticated()).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
 

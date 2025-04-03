@@ -1,7 +1,6 @@
 package com.userauthentication.jdp.serviceImpl;
 
 import com.foodapplication.jdp.Common_Service.Service.SequenceService;
-//import com.userauthentication.jdp.config.SecurityConfig;
 import com.userauthentication.jdp.config.SecurityConfig;
 import com.userauthentication.jdp.entity.EmailRequest;
 import com.userauthentication.jdp.entity.User;
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @Service
 @Slf4j
@@ -70,6 +70,7 @@ public class UserServiceImpl implements UserService {
             user.setFirstName(user.getEmail().substring(0, user.getEmail().indexOf("@")));
             userRepository.save(user);
             status = "User saved successfully";
+            System.out.println(status);
             log.info("User saved successfully");
             emailRequest.setSenderEmail(user.getEmail());
             emailRequest.setSubject("Registration Acknowledgement");
@@ -122,6 +123,35 @@ public class UserServiceImpl implements UserService {
             throw e;
         }
         return token;
+    }
+
+    public String sendOtp(String email, HttpServletRequest request) throws Exception {
+        String status = "";
+        Map<String, Integer> otpStorage = new HashMap<>();
+        EmailRequest emailRequest = new EmailRequest();
+        if (email == null || email.isEmpty()) {
+            throw new Exception("Email must not be null");
+        }
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            status = "User not found. Please Register";
+            return status;
+        }
+        int otp = 100000 + new Random().nextInt(900000);
+        otpStorage.put(email, otp);
+        String message = "Your OTP for login is: " + otp;
+        emailRequest.setSenderEmail(email);
+        emailRequest.setSubject("OTP for Login");
+        emailRequest.setTemplateName("otp-email");
+        emailRequest.setOtp(String.valueOf(otp));
+        emailRequest.setDateAndTime(java.time.LocalDateTime.now());
+        emailRequest.setDevice("System");
+        emailRequest.setIpaddress("Server");
+        emailRequest.setUserName("user");
+        emailClient.sendEmail(emailRequest);
+
+        status = "OTP sent successfully to " + email;
+        return status;
     }
 
 

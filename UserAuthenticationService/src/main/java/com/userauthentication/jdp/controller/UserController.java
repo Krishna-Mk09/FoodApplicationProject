@@ -2,7 +2,7 @@ package com.userauthentication.jdp.controller;
 
 import com.userauthentication.jdp.entity.User;
 import com.userauthentication.jdp.serviceImpl.UserServiceImpl;
-import io.swagger.v3.oas.annotations.Operation;
+
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,8 +31,8 @@ public class UserController {
     }
 
 
-    @Operation(summary = "Register a new user", description = "Register a new user", tags = {"user"})
-     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "success")})
+    //@ApiOperation(value = "Saves users in to the database  ", notes = "Saves users in to the database  ")
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "success")})
     @PostMapping("/registerUser")
     public ResponseEntity<String> registerUser(@Valid @RequestBody User user) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -56,6 +56,22 @@ public class UserController {
         try {
             log.info("User Controller.login: user: ");
             String token = this.userService.loginUser(users.getEmail(), users.getPassword(),request);
+            log.info("User logged inn: user: ");
+            return new ResponseEntity<>(token, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(" Exception occurred while user log in ", ExceptionUtils.getStackTrace(e));
+            throw new Exception(e.getMessage());
+        }
+    }
+
+
+
+    @PostMapping("/send-otp/{email}")
+    public ResponseEntity<?> sendOtp(@Valid @PathVariable("email") String email,HttpServletRequest request) throws Exception {
+        log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
+        try {
+            log.info("User Controller.login: user: ");
+            String token = this.userService.sendOtp(email,request);
             log.info("User logged inn: user: ");
             return new ResponseEntity<>(token, HttpStatus.OK);
         } catch (Exception e) {

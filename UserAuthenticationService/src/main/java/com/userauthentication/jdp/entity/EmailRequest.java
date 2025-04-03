@@ -23,4 +23,6 @@ public class EmailRequest {
     private String device;
     private LocalDateTime dateAndTime;
 
+    private String otp;
+
 }

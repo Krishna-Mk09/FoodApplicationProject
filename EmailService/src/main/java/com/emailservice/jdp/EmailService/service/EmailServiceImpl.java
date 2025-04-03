@@ -34,11 +34,11 @@ public class EmailServiceImpl implements EmailService {
             templateModel.put("IP", request.getIpaddress());
             templateModel.put("Device", request.getDevice());
             templateModel.put("DateAndTime", java.time.LocalDateTime.now().toString());
+            templateModel.put("OTP", request.getOtp()==null? "":request.getOtp());
             request.setTemplateModel(templateModel);
             context.setVariables(request.getTemplateModel());
             String htmlContent = templateEngine.process(request.getTemplateName(), context);
             MimeMessage mimeMessage = mailSender.createMimeMessage();
-
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             helper.setTo(request.getSenderEmail());
             helper.setSubject(request.getSubject());
