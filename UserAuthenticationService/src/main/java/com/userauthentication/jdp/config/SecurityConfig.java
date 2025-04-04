@@ -1,16 +1,15 @@
 package com.userauthentication.jdp.config;
 
+import com.userauthentication.jdp.filter.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /*
  * Author Name : M.V.Krishna
@@ -18,21 +17,27 @@ import org.springframework.security.web.SecurityFilterChain;
  * Created With: IntelliJ IDEA Ultimate Edition
  */
 @Configuration
+@EnableWebSecurity
+
 public class SecurityConfig {
+    @Bean
+    public JwtFilter jwtFilter() {
+        return new JwtFilter();
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
 
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()) // Disabling CSRF for API access
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/userAuthService/registerUser", "/userAuthService/login", "/userAuthService/send-otp/**","/userAuthService/verify-otp/**",  "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll().anyRequest().authenticated()).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth.requestMatchers("/userAuthService/registerUser", "/userAuthService/login", "/userAuthService/send-otp/**", "/userAuthService/verify-otp/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll().requestMatchers("/admin/**").hasRole("ADMIN").requestMatchers("/userAuthService/deleteUser/**").hasRole("ADMIN").requestMatchers("/userAuthService/**").hasRole("USER").anyRequest().authenticated()).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
 }
+
+
 
 
