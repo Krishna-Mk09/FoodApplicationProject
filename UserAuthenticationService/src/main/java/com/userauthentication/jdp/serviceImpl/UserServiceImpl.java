@@ -1,6 +1,7 @@
 package com.userauthentication.jdp.serviceImpl;
 
 import com.foodapplication.jdp.Common_Service.Service.SequenceService;
+import com.userauthentication.jdp.beans.OTP;
 import com.userauthentication.jdp.config.SecurityConfig;
 import com.userauthentication.jdp.entity.EmailRequest;
 import com.userauthentication.jdp.entity.User;
@@ -16,15 +17,21 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
+
+    private static final Map<String, OTP> otpStore = new ConcurrentHashMap<>();
     private final UserRepository userRepository;
     private final SecurityConfig encoder;
     private final SecurityTokenGeneratorImpl SECURITY_TOKEN_GENERATOR;
     private final EmailClient emailClient;
+    //    private final StringRedisTemplate redisTemplate;
     private final SequenceService sequenceService;
+
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, SecurityConfig passwordEncoder, SecurityTokenGeneratorImpl securityTokenGenerator, EmailClient emailClient, SequenceService sequenceService) {
@@ -127,7 +134,6 @@ public class UserServiceImpl implements UserService {
 
     public String sendOtp(String email, HttpServletRequest request) throws Exception {
         String status = "";
-        Map<String, Integer> otpStorage = new HashMap<>();
         EmailRequest emailRequest = new EmailRequest();
         if (email == null || email.isEmpty()) {
             throw new Exception("Email must not be null");
@@ -138,7 +144,8 @@ public class UserServiceImpl implements UserService {
             return status;
         }
         int otp = 100000 + new Random().nextInt(900000);
-        otpStorage.put(email, otp);
+//        redisTemplate.opsForValue().set(email, String.valueOf(otp));
+        otpStore.put(email, new OTP(otp, System.currentTimeMillis()));
         String message = "Your OTP for login is: " + otp;
         emailRequest.setSenderEmail(email);
         emailRequest.setSubject("OTP for Login");
@@ -149,11 +156,51 @@ public class UserServiceImpl implements UserService {
         emailRequest.setIpaddress("Server");
         emailRequest.setUserName("user");
         emailClient.sendEmail(emailRequest);
-
         status = "OTP sent successfully to " + email;
         return status;
     }
 
+
+    public String verifyOtp(String email, int otp) throws Exception {
+        String token = null;
+        User newUser = new User();
+//        String storedOtp = redisTemplate.opsForValue().get(email);
+        if (email == null || email.isEmpty()) {
+            throw new Exception("Email must not be null");
+        }
+        OTP otpData = otpStore.get(email);
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - otpData.getTimeStamp() > TimeUnit.MINUTES.toMillis(2)) {
+            otpStore.remove(email); // Expired OTP is removed
+            token = "OTP expired. Please request a new one.";
+            return token;
+        }
+
+        try {
+            if (otpData == null || otpData.getOtp() == 0) {
+                token = "Please try again.Resend OTP ? ";
+                return token;
+            } else {
+                if (otpData.getOtp() != 0 && otpData.getOtp() == otp) {
+                    User user = userRepository.findByEmail(email);
+                    newUser.setEmail(email);
+                    newUser.setUserId(user.getUserId());
+                    newUser.setUserName(user.getUserName());
+                    newUser.setPhoneNum(user.getPhoneNum());
+                    newUser.setPassword(user.getPassword());
+                    newUser.setRole(user.getRole());
+                    newUser.setFirstName(user.getFirstName());
+                    newUser.setIsActive(user.getIsActive());
+                    token = this.SECURITY_TOKEN_GENERATOR.generateToken(newUser);
+                    otpStore.remove(email);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Exception occurred while verifying OTP", ExceptionUtils.getStackTrace(e));
+            throw e;
+        }
+        return token;
+    }
 
     public Map<String, String> getLoginDetails(HttpServletRequest request) {
         Map<String, String> loginDetails = new HashMap<>();

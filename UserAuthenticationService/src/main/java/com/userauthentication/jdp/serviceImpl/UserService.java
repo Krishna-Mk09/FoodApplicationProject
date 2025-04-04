@@ -13,6 +13,9 @@ public interface UserService {
 
     String sendOtp(String email, HttpServletRequest request) throws Exception;
 
+    String verifyOtp(String email, int otp) throws Exception;
+
+
     String deleteByUserId(Long userId) throws Exception;
 
     void updateUserPassword(Long userId, String password);
