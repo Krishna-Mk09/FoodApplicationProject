@@ -2,12 +2,12 @@ package com.userauthentication.jdp.serviceImpl;
 
 import com.userauthentication.jdp.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface UserService {
 
     String saveUser(User user) throws Exception;
-
-    User updateUser(User user, Long userId);
 
     String loginUser(String email, String password, HttpServletRequest request) throws Exception;
 
@@ -15,11 +15,14 @@ public interface UserService {
 
     String verifyOtp(String email, int otp) throws Exception;
 
+    @Transactional
+    @Modifying
+    void deleteByUserId(long userId) throws Exception;
 
-    String deleteByUserId(Long userId) throws Exception;
+    @Transactional
+    @Modifying
+    void updateUserPassword(long userId, String newPassword);
 
-    void updateUserPassword(Long userId, String password);
-
-    void updateUserRole(Long userId, String role);
-
+    @Transactional
+    void updateUserRole(long userId, String role);
 }

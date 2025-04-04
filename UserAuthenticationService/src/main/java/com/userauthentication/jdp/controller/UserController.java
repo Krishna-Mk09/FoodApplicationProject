@@ -29,8 +29,6 @@ public class UserController {
         this.userService = userService;
     }
 
-
-    //@ApiOperation(value = "Saves users in to the database  ", notes = "Saves users in to the database  ")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "success")})
     @PostMapping("/registerUser")
     public ResponseEntity<String> registerUser(@Valid @RequestBody User user) throws Exception {
@@ -46,7 +44,6 @@ public class UserController {
         }
     }
 
-
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@Valid @RequestBody User users, HttpServletRequest request) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -60,7 +57,6 @@ public class UserController {
             throw new Exception(e.getMessage());
         }
     }
-
 
     @PostMapping("/send-otp/{email}")
     public ResponseEntity<?> sendOtp(@Valid @PathVariable("email") String email, HttpServletRequest request) throws Exception {
@@ -76,7 +72,6 @@ public class UserController {
         }
     }
 
-
     @PostMapping("/verify-otp/{email}/{otp}")
     public ResponseEntity<String> verifyOtp(@Valid @PathVariable("email") String email, @PathVariable("otp") int otp) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -90,18 +85,16 @@ public class UserController {
         }
     }
 
-
     @DeleteMapping("/deleteUser/{userId}")
     public ResponseEntity<String> deleteUser(@Valid @PathVariable long userId) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
         try {
             log.info("User Controller.login: user: ");
-            String str = this.userService.deleteByUserId(userId);
-            return new ResponseEntity<>(str, HttpStatus.OK);
+            this.userService.deleteByUserId(userId);
+            return new ResponseEntity<>("User deleted Successfully", HttpStatus.OK);
         } catch (Exception e) {
             log.error(" Exception occurred while user log in ", ExceptionUtils.getStackTrace(e));
             throw new Exception(e.getMessage());
         }
     }
-
 }

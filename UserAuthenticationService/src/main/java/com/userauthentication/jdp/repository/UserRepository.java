@@ -26,7 +26,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByEmailAndPassword(String email, String password);
 
-    String deleteByUserId(Long userId);
+    void deleteByUserId(long userId);
 
     boolean existsByEmailOrPhoneNum(String email, String phoneNum);
 
@@ -38,5 +38,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Transactional
     @Modifying
     @Query("UPDATE User u SET u.role = :role WHERE u.userId = :userId")
-    void updateUserRole(Long userId, String role);
+    void updateUserRole(long userId, String role);
 }

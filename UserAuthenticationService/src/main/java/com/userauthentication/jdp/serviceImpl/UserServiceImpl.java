@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,15 +24,13 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
-
     private static final Map<String, OTP> otpStore = new ConcurrentHashMap<>();
     private final UserRepository userRepository;
     private final SecurityConfig encoder;
     private final SecurityTokenGeneratorImpl SECURITY_TOKEN_GENERATOR;
     private final EmailClient emailClient;
-    //    private final StringRedisTemplate redisTemplate;
     private final SequenceService sequenceService;
-
+    //    private final StringRedisTemplate redisTemplate;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, SecurityConfig passwordEncoder, SecurityTokenGeneratorImpl securityTokenGenerator, EmailClient emailClient, SequenceService sequenceService) {
@@ -67,7 +66,7 @@ public class UserServiceImpl implements UserService {
             } else {
                 log.error("Sequence generation failed for USERS Table");
             }
-            user.setRole("USER");
+            user.setRole(user.getRole() == null ? "USER" : user.getRole());
             user.setCreatedBy(user.getEmail());
             user.setCreationDate(java.time.LocalDateTime.now());
             user.setIsActive(true);
@@ -77,8 +76,6 @@ public class UserServiceImpl implements UserService {
             user.setFirstName(user.getEmail().substring(0, user.getEmail().indexOf("@")));
             userRepository.save(user);
             status = "User saved successfully";
-            System.out.println(status);
-            log.info("User saved successfully");
             emailRequest.setSenderEmail(user.getEmail());
             emailRequest.setSubject("Registration Acknowledgement");
             emailRequest.setTemplateName("welcome-email");
@@ -92,16 +89,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(User user, Long userId) {
-        return null;
-    }
-
-
-    @Override
     public String loginUser(String email, String password, HttpServletRequest request) throws Exception {
         String token = null;
         EmailRequest emailRequest = new EmailRequest();
-
         try {
             if (email == null || password == null) {
                 token = "Email and password must not be null";
@@ -175,7 +165,6 @@ public class UserServiceImpl implements UserService {
             token = "OTP expired. Please request a new one.";
             return token;
         }
-
         try {
             if (otpData == null || otpData.getOtp() == 0) {
                 token = "Please try again.Resend OTP ? ";
@@ -216,18 +205,24 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public String deleteByUserId(Long userId) throws Exception {
-        if (userId == null) {
-            throw new Exception("User Id must not be null");
+    @Transactional
+    @Modifying
+    public void deleteByUserId(long userId) throws Exception {
+        try {
+            if (userId != 0L) {
+                userRepository.deleteByUserId(userId);
+            }
+        } catch (Exception e) {
+            log.error("Exception occurred while deleting user", ExceptionUtils.getStackTrace(e));
+            throw e;
         }
-        String user = userRepository.deleteByUserId(userId);
-        return user;
     }
 
     @Override
     @Transactional
-    public void updateUserPassword(Long userId, String newPassword) {
-        if (userId == null || newPassword == null) {
+    @Modifying
+    public void updateUserPassword(long userId, String newPassword) {
+        if (userId == 0L || newPassword == null) {
             throw new IllegalArgumentException("User Id and new password must not be null");
         }
         userRepository.updateUserPassword(userId, newPassword);
@@ -235,7 +230,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUserRole(Long userId, String role) {
+    public void updateUserRole(long userId, String role) {
         userRepository.updateUserRole(userId, role);
     }
 }
