@@ -34,7 +34,7 @@ public class UserController {
     public ResponseEntity<String> registerUser(@Valid @RequestBody User user) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
         try {
-            log.info("User Controller.registerUser: user: {}");
+            log.info("User Controller.registerUser: userId {} userName{}", user.getUserId(),user.getUserName());
             String savedUser = this.userService.saveUser(user);
             log.info("User successfully saved with ID = {}");
             return new ResponseEntity<>(savedUser, HttpStatus.CREATED);

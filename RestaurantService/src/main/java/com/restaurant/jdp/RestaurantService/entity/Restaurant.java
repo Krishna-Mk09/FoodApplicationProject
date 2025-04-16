@@ -19,63 +19,122 @@ import java.util.List;
 public class Restaurant {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // Primary key
+    @Column(name = "id", nullable = false)
+    private long id;
 
-    private String name; // Restaurant name
-    private String description; // About the restaurant
-    private String contactNumber; // Business phone number
-    private String email; // Business email ID
+    @Column(name = "name", nullable = false, length = 1000)
+    private String name;
 
-    private String address; // Full address
-    private String area; // Locality / landmark
-    private String city; // City
-    private String state; // State
-    private String pincode; // Postal code
+    @Column(name = "description", length = 500)
+    private String description;
 
-    private String cuisineType; // e.g., "Chinese, Indian"
-    private Double averageCostForTwo; // INR value
+    @Column(name = "contact_number", length = 15)
+    private String contactNumber;
 
-    private Double rating; // Average customer rating
-    private Integer totalRatings; // Total number of reviews
+    @Column(name = "email", length = 100)
+    private String email;
 
-    private String openingTime; // e.g., "09:00 AM"
-    private String closingTime; // e.g., "11:00 PM"
-    private Boolean isOpen; // True if open now
+    @Column(name = "address", length = 4000)
+    private String address;
 
-    private Boolean isVerified; // Verified by Zomato/admin
-    private Boolean isPureVeg; // True if pure vegetarian
-    private Boolean acceptsOnlineOrders; // Accepts online orders
-    private Boolean acceptsTableBooking; // Accepts dine-in bookings
-    private Boolean homeDelivery; // Offers delivery
+    @Column(name = "area", length = 100)
+    private String area;
 
+    @Column(name = "city", length = 100)
+    private String city;
+
+    @Column(name = "state", length = 100)
+    private String state;
+
+    @Column(name = "pincode", length = 10)
+    private String pincode;
+
+    @Column(name = "cuisine_type", length = 200)
+    private String cuisineType;
+
+    @Column(name = "average_cost_for_two")
+    private Double averageCostForTwo;
+
+    @Column(name = "rating")
+    private Double rating;
+
+    @Column(name = "total_ratings")
+    private Integer totalRatings;
+
+    @Column(name = "opening_time", length = 10)
+    private String openingTime;
+
+    @Column(name = "closing_time", length = 10)
+    private String closingTime;
+
+    @Column(name = "is_open")
+    private Boolean isOpen;
+
+    @Column(name = "is_verified")
+    private Boolean isVerified;
+
+    @Column(name = "is_pure_veg")
+    private Boolean isPureVeg;
+
+    @Column(name = "accepts_online_orders")
+    private Boolean acceptsOnlineOrders;
+
+    @Column(name = "accepts_table_booking")
+    private Boolean acceptsTableBooking;
+
+    @Column(name = "home_delivery")
+    private Boolean homeDelivery;
+
+    @Column(name = "latitude")
     private Double latitude;
+
+    @Column(name = "longitude")
     private Double longitude;
 
+    @Column(name = "delivery_time_in_min")
+    private Integer deliveryTimeInMin;
 
-    private Integer deliveryTimeInMin; // Estimated delivery time
-    private Double deliveryCharge; // Delivery fee
+    @Column(name = "delivery_charge")
+    private Double deliveryCharge;
 
-    private String imageUrl; // Banner or restaurant image
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
 
-    private LocalDateTime createdAt; // Created timestamp
-    private LocalDateTime updatedAt; // Last modified
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-    // Many restaurants can belong to one owner
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private RestaurantOwner owner;
 
-    // One restaurant has many menu items
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    private List<MenuItem> menuItems;
+    @ManyToOne
+    @JoinColumn(name = "licence_id")
+    private RestaurantLicence restaurantLicence;
 
-    // One restaurant can have many customer reviews
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    private List<RestaurantReview> reviews;
+//    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+//    private List<MenuItem> menuItems;
 
-    // Offers active for this restaurant
+//    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+//    private List<RestaurantReview> reviews;
 
-    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    private List<RestaurantOffer> offers;
+//    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+//    private List<RestaurantOffer> offers;
+
+    @Column(name = "user_id")
+    private long userId;
+
+    @Column(name = "payment_methods", length = 100)
+    private String paymentMethods;
+
+    @Column(name = "additional_services", length = 100)
+    private String additionalServices;
+
+    @Column(name = "social_media_links", length = 500)
+    private String socialMediaLinks;
+
+    @Column(name = "website_url", length = 500)
+    private String websiteUrl;
 }
