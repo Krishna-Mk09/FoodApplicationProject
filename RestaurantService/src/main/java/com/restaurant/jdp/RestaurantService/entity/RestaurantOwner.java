@@ -17,33 +17,30 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class RestaurantOwner {
-
     @Id
-    @Column(name = "owner_id", nullable = false)
-    private long id;
+    @Column(name = "OWNER_ID", nullable = false)
+    private long ownerId;
 
-    @Column(name = "name", nullable = false, length = 100)
-    private String name; // Full name
+    @Column(name = "NAME", nullable = false, length = 100)
+    private String name;
 
-    @Column(name = "email", nullable = false, unique = true, length = 100)
-    private String email; // Login email
+    @Column(name = "EMAIL", nullable = false, unique = true, length = 100)
+    private String email;
 
-    @Column(name = "phone_number", nullable = false, length = 15)
-    private String phoneNumber; // For OTP login
+    @Column(name = "PHONE_NUMBER", nullable = false, length = 15)
+    private String phoneNumber;
 
-    @Column(name = "password_hash", nullable = false, length = 500)
-    private String passwordHash; // Encrypted password
+    @Column(name = "PASSWORD_HASH", nullable = false, length = 500)
+    private String passwordHash;
+    @Column(name = "PROFILE_IMAGE_URL", length = 500)
+    private String profileImageUrl;
 
-    @Column(name = "profile_image_url", length = 500)
-    private String profileImageUrl; // Optional profile image
+    @Column(name = "REGISTERED_AT", nullable = false)
+    private LocalDateTime registeredAt;
 
-    @Column(name = "registered_at", nullable = false)
-    private LocalDateTime registeredAt; // Registration timestamp
-
-    // One owner can own multiple restaurants
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
     private List<Restaurant> restaurants;
 
-    @Column(name = "restaurant_id", nullable = false)
-    private long restaurantId; // ID of the restaurant owned by this owner
+    @Column(name = "RESTAURANT_ID", nullable = false)
+    private Long restaurantId;
 }

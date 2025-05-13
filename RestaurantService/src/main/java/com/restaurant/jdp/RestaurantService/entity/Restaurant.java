@@ -10,7 +10,7 @@ import java.util.List;
  * Represents a Restaurant entity with complete business, address, and operational details.
  */
 @Entity
-@Table(name = "restaurants")
+@Table(name = "RESTAURANTS")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,123 +18,121 @@ import java.util.List;
 @Builder
 public class Restaurant {
 
+    @Column(name = "USER_ID")
+    private Long userId;
     @Id
-    @Column(name = "id", nullable = false)
-    private long id;
+    @Column(name = "RESTAURANT_ID", nullable = false)
+    private Long restaurantId;
 
-    @Column(name = "name", nullable = false, length = 1000)
+    @Column(name = "NAME", nullable = false, length = 1000)
     private String name;
 
-    @Column(name = "description", length = 500)
+    @Column(name = "DESCRIPTION", length = 500)
     private String description;
 
-    @Column(name = "contact_number", length = 15)
+    @Column(name = "CONTACT_NUMBER", length = 15)
     private String contactNumber;
 
-    @Column(name = "email", length = 100)
+    @Column(name = "EMAIL", length = 100)
     private String email;
 
-    @Column(name = "address", length = 4000)
+    @Column(name = "ADDRESS", length = 4000)
     private String address;
 
-    @Column(name = "area", length = 100)
+    @Column(name = "AREA", length = 100)
     private String area;
 
-    @Column(name = "city", length = 100)
+    @Column(name = "CITY", length = 100)
     private String city;
 
-    @Column(name = "state", length = 100)
+    @Column(name = "STATE", length = 100)
     private String state;
 
-    @Column(name = "pincode", length = 10)
+    @Column(name = "PINCODE", length = 10)
     private String pincode;
 
-    @Column(name = "cuisine_type", length = 200)
+    @Column(name = "CUISINE_TYPE", length = 200)
     private String cuisineType;
 
-    @Column(name = "average_cost_for_two")
-    private Double averageCostForTwo;
-
-    @Column(name = "rating")
+    @Column(name = "RATING")
     private Double rating;
 
-    @Column(name = "total_ratings")
+    @Column(name = "TOTAL_RATINGS")
     private Integer totalRatings;
 
-    @Column(name = "opening_time", length = 10)
+    @Column(name = "OPENING_TIME", length = 10)
     private String openingTime;
 
-    @Column(name = "closing_time", length = 10)
+    @Column(name = "CLOSING_TIME", length = 10)
     private String closingTime;
 
-    @Column(name = "is_open")
+    @Column(name = "IS_OPEN")
     private Boolean isOpen;
 
-    @Column(name = "is_verified")
+    @Column(name = "IS_VERIFIED")
     private Boolean isVerified;
 
-    @Column(name = "is_pure_veg")
+    @Column(name = "IS_PURE_VEG")
     private Boolean isPureVeg;
 
-    @Column(name = "accepts_online_orders")
+    @Column(name = "ACCEPTS_ONLINE_ORDERS")
     private Boolean acceptsOnlineOrders;
 
-    @Column(name = "accepts_table_booking")
+    @Column(name = "ACCEPTS_TABLE_BOOKING")
     private Boolean acceptsTableBooking;
 
-    @Column(name = "home_delivery")
+    @Column(name = "HOME_DELIVERY")
     private Boolean homeDelivery;
 
-    @Column(name = "latitude")
+    @Column(name = "LATITUDE")
     private Double latitude;
 
-    @Column(name = "longitude")
+    @Column(name = "LONGITUDE")
     private Double longitude;
 
-    @Column(name = "delivery_time_in_min")
+    @Column(name = "DELIVERY_TIME_IN_MIN")
     private Integer deliveryTimeInMin;
 
-    @Column(name = "delivery_charge")
+    @Column(name = "DELIVERY_CHARGE")
     private Double deliveryCharge;
 
-    @Column(name = "image_url", length = 500)
+    @Column(name = "IMAGE_URL", length = 500)
     private String imageUrl;
 
-    @Column(name = "created_at")
+    @Column(name = "CREATED_AT")
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "UPDATED_AT")
     private LocalDateTime updatedAt;
 
+    @Column(name = "PAYMENT_METHODS", length = 100)
+    private String paymentMethods;
+
+    @Column(name = "ADDITIONAL_SERVICES", length = 100)
+    private String additionalServices;
+
+    @Column(name = "SOCIAL_MEDIA_LINKS", length = 500)
+    private String socialMediaLinks;
+
+    @Column(name = "WEBSITE_URL", length = 500)
+    private String websiteUrl;
+
     @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "OWNER_ID")
     private RestaurantOwner owner;
 
     @ManyToOne
-    @JoinColumn(name = "licence_id")
+    @JoinColumn(name = "LICENCE_ID")
     private RestaurantLicence restaurantLicence;
 
-//    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-//    private List<MenuItem> menuItems;
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+    private List<Items> items;
 
-//    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-//    private List<RestaurantReview> reviews;
 
-//    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-//    private List<RestaurantOffer> offers;
+    //    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+    //    private List<RestaurantReview> reviews;
 
-    @Column(name = "user_id")
-    private long userId;
+    //    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
+    //    private List<RestaurantOffer> offers;
 
-    @Column(name = "payment_methods", length = 100)
-    private String paymentMethods;
-
-    @Column(name = "additional_services", length = 100)
-    private String additionalServices;
-
-    @Column(name = "social_media_links", length = 500)
-    private String socialMediaLinks;
-
-    @Column(name = "website_url", length = 500)
-    private String websiteUrl;
 }

@@ -1,5 +1,7 @@
 package com.userauthentication.jdp.controller;
 
+import com.foodapplication.jdp.Common_Service.Entity.UserDTO;
+import com.userauthentication.jdp.beans.UserUpdate;
 import com.userauthentication.jdp.entity.User;
 import com.userauthentication.jdp.serviceImpl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,12 +31,22 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/userInfo")
+    public ResponseEntity<UserDTO> getCurrentUser() {
+        try {
+            UserDTO currentUser = userService.getCurrentUser();
+            return new ResponseEntity<>(currentUser, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(" Exception occurred while getting in ", ExceptionUtils.getStackTrace(e));
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "success")})
     @PostMapping("/registerUser")
     public ResponseEntity<String> registerUser(@Valid @RequestBody User user) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
         try {
-            log.info("User Controller.registerUser: userId {} userName{}", user.getUserId(),user.getUserName());
+            log.info("User Controller.registerUser: userId {} userName{}", user.getUserId(), user.getUserName());
             String savedUser = this.userService.saveUser(user);
             log.info("User successfully saved with ID = {}");
             return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
@@ -92,6 +104,20 @@ public class UserController {
             log.info("User Controller.login: user: ");
             this.userService.deleteByUserId(userId);
             return new ResponseEntity<>("User deleted Successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(" Exception occurred while user log in ", ExceptionUtils.getStackTrace(e));
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @PostMapping("/becomeOwner")
+    public ResponseEntity<String> becomeOwner(@Valid @RequestBody UserUpdate bean, HttpServletRequest request) throws Exception {
+        log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
+        try {
+            UserDTO currentUser = userService.getCurrentUser();
+            userService.updateUser(currentUser.getEmail(), bean);
+            log.info("User Controller.login: user: ");
+            return new ResponseEntity<>("User Updated Successfully", HttpStatus.OK);
         } catch (Exception e) {
             log.error(" Exception occurred while user log in ", ExceptionUtils.getStackTrace(e));
             throw new Exception(e.getMessage());

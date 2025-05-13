@@ -1,6 +1,7 @@
 package com.foodapplication.jdp.Common_Service.ServiceImpl;
 
 import com.foodapplication.jdp.Common_Service.Entity.Sequence;
+import com.foodapplication.jdp.Common_Service.Entity.UserDTO;
 import com.foodapplication.jdp.Common_Service.Service.SequenceService;
 import com.foodapplication.jdp.Common_Service.repository.SequenceRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,8 +24,34 @@ import java.util.List;
 @Service
 public class SequenceServiceImpl implements SequenceService {
 
+    private final WebClient webClient;
+    private final SequenceRepository sequenceRepository;
     @Autowired
-    private SequenceRepository sequenceRepository;
+    private WebClient.Builder webClientBuilder;
+
+    @Autowired
+    public SequenceServiceImpl(SequenceRepository sequenceRepository, WebClient.Builder webClientBuilder) {
+        this.sequenceRepository = sequenceRepository;
+        this.webClient = webClientBuilder.baseUrl("http://user-authentication-service").build();
+    }
+
+
+//    public UserDTO getCurrentUser(String token) {
+//        return webClient.get()
+////                .uri("/userAuthService/userInfo")
+//                .uri("/userAuthService/userInfo")
+//                .header("Authorization",
+//                        token)
+//                .retrieve()
+//                .bodyToMono(UserDTO.class)
+//                .block(); // or use async if needed
+//    }
+
+
+    public UserDTO getCurrentUser(String token) {
+        return webClientBuilder.baseUrl("http://user-authentication-service") // Eureka service name
+                .build().get().uri("/userAuthService/userInfo").header("Authorization", token).retrieve().bodyToMono(UserDTO.class).block();
+    }
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -75,4 +103,6 @@ public class SequenceServiceImpl implements SequenceService {
         }
         return newSequence;
     }
+
+
 }
