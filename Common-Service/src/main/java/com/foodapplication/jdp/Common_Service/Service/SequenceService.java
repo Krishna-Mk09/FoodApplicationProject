@@ -1,6 +1,6 @@
 package com.foodapplication.jdp.Common_Service.Service;
 
-import org.springframework.stereotype.Repository;
+import com.foodapplication.jdp.Common_Service.Entity.UserDTO;
 
 /*
  * Author Name : M.V.Krishna
@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
  */
 public interface SequenceService {
     long getSequenceByCustomer(String tableName) throws Exception;
+
+    UserDTO getCurrentUser(String token) throws Exception;
 }

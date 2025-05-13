@@ -1,7 +1,10 @@
 package com.userauthentication.jdp.serviceImpl;
 
+import com.foodapplication.jdp.Common_Service.Entity.UserDTO;
 import com.foodapplication.jdp.Common_Service.Service.SequenceService;
 import com.userauthentication.jdp.beans.OTP;
+import com.userauthentication.jdp.beans.UserMapper;
+import com.userauthentication.jdp.beans.UserUpdate;
 import com.userauthentication.jdp.config.SecurityConfig;
 import com.userauthentication.jdp.entity.EmailRequest;
 import com.userauthentication.jdp.entity.User;
@@ -12,11 +15,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -30,15 +37,18 @@ public class UserServiceImpl implements UserService {
     private final SecurityTokenGeneratorImpl SECURITY_TOKEN_GENERATOR;
     private final EmailClient emailClient;
     private final SequenceService sequenceService;
-    //    private final StringRedisTemplate redisTemplate;
+    private final UserMapper userMapper;
+
+    // private final StringRedisTemplate redisTemplate;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, SecurityConfig passwordEncoder, SecurityTokenGeneratorImpl securityTokenGenerator, EmailClient emailClient, SequenceService sequenceService) {
+    public UserServiceImpl(UserRepository userRepository, SecurityConfig passwordEncoder, SecurityTokenGeneratorImpl securityTokenGenerator, EmailClient emailClient, SequenceService sequenceService, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.encoder = passwordEncoder;
         SECURITY_TOKEN_GENERATOR = securityTokenGenerator;
         this.emailClient = emailClient;
         this.sequenceService = sequenceService;
+        this.userMapper = userMapper;
     }
 
 
@@ -228,9 +238,40 @@ public class UserServiceImpl implements UserService {
         userRepository.updateUserPassword(userId, newPassword);
     }
 
+    public UserDTO getCurrentUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = (principal instanceof UserDetails) ? ((UserDetails) principal).getUsername() : principal.toString();
+        Optional<User> userOptional = Optional.ofNullable(userRepository.findByEmail(email));
+        if (!userOptional.isPresent()) {
+            throw new UsernameNotFoundException("User not found with email: " + email);
+        }
+        return userMapper.toDTO(userOptional.get());
+    }
+
     @Override
     @Transactional
     public void updateUserRole(long userId, String role) {
         userRepository.updateUserRole(userId, role);
+    }
+
+    @Override
+    public void updateUser(User user) {
+
+    }
+
+    @Override
+    @Transactional
+    public void updateUser(String email, UserUpdate bean) {
+        User user = userRepository.findByEmail(email);
+        user.setSecondaryEmail(bean.getUserBusinessEmail());
+        user.setAadhaarNumber(bean.getAadhaarNumber());
+        user.setGstNumber(bean.getGovernment_issued_id());
+        user.setLicenseNumber(bean.getLicenseNumber());
+        user.setPanNumber(bean.getPanNumber());
+        user.setProfilePhoto(bean.getProfilePhoto());
+        user.setRestaurantPhoto(bean.getRestaurantPhoto());
+        user.setRole("OWNER");
+        user.setNameAsInLicense(bean.getNameAsInLicense());
+        userRepository.save(user);
     }
 }

@@ -1,5 +1,7 @@
 package com.userauthentication.jdp.serviceImpl;
 
+import com.foodapplication.jdp.Common_Service.Entity.UserDTO;
+import com.userauthentication.jdp.beans.UserUpdate;
 import com.userauthentication.jdp.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,4 +27,13 @@ public interface UserService {
 
     @Transactional
     void updateUserRole(long userId, String role);
+
+    @Transactional
+    void updateUser(User user);
+
+    @Transactional
+    void updateUser(String email, UserUpdate bean);
+
+    UserDTO getCurrentUser() throws Exception;
+
 }

@@ -12,45 +12,43 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "restaurant_licences")
+@Table(name = "RESTAURANT_LICENCES")
 public class RestaurantLicence {
 
     @Id
-    @Column(name = "licence_id")
-    private long id;
+    @Column(name = "LICENCE_ID")
+    private Long licenceId;
 
-    @Column(name = "restaurant_id")
-    private long restaurantId;
+    @Column(name = "RESTAURANT_ID")
+    private Long restaurantId;
 
-    @Column(name = "licence_type", nullable = false, length = 100)
+    @Column(name = "LICENCE_TYPE", nullable = false, length = 100)
     private String licenceType;
 
-    @Column(name = "licence_name", nullable = false, length = 100)
+    @Column(name = "LICENCE_NAME", nullable = false, length = 100)
     private String licenceName;
 
-    @Column(name = "licence_number", nullable = false, length = 100)
+    @Column(name = "LICENCE_NUMBER", nullable = false, length = 100)
     private String licenceNumber;
 
-    @Column(name = "licence_issue_date")
+    @Column(name = "LICENCE_ISSUE_DATE")
     private LocalDate licenceIssueDate;
 
-    @Column(name = "licence_expiry_date")
+    @Column(name = "LICENCE_EXPIRY_DATE")
     private LocalDate licenceExpiryDate;
 
-
-
-    @Column(name = "licence_description", length = 500)
+    @Column(name = "LICENCE_DESCRIPTION", length = 500)
     private String licenceDescription;
 
-    @Column(name = "licence_authority", length = 500)
+    @Column(name = "LICENCE_AUTHORITY", length = 500)
     private String licenceAuthority;
 
-    @Column(name = "licence_document_status", length = 50)
+    @Column(name = "LICENCE_DOCUMENT_STATUS", length = 50)
     private String licenceDocumentStatus;
 
-    @Column(name = "licence_document_issued_by")
+    @Column(name = "LICENCE_DOCUMENT_ISSUED_BY")
     private String licenceDocumentIssuedBy;
 
-    @Column(name = "user_id")
+    @Column(name = "USER_ID")
     private long userId;
 }
