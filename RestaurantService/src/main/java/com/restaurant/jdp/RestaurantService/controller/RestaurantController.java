@@ -48,12 +48,19 @@ public class RestaurantController {
         }
     }
 
-    // user search restaurant screen
+    // user update restaurant screen
+    @PreAuthorize("hasRole('OWNER')")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "success")})
     @PutMapping("/restaurants/{id}")
-    public void updateRestaurant(@PathVariable long id, @RequestBody Restaurant restaurant) {
-        restaurant.setRestaurantId(id);
-        restaurantService.updateRestaurant(restaurant);
+    public void updateRestaurant(@PathVariable long id, @RequestBody Restaurant restaurant, @RequestHeader("Authorization") String authHeader) throws Exception {
+        log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
+        try {
+            restaurant.setRestaurantId(id);
+            restaurantService.updateRestaurant(restaurant, authHeader);
+        } catch (Exception e) {
+            log.error("Exception occurred while updating restaurant: {}", e.getMessage());
+            throw new Exception(e.getMessage());
+        }
     }
 
     // user delete restaurant screen

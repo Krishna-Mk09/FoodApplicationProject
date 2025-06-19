@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface RestaurantService {
     void addRestaurant(Restaurant restaurant, String authHeade) throws Exception;
-    void updateRestaurant(Restaurant restaurant);
+    void updateRestaurant(Restaurant restaurant, String authHeader) throws Exception;
     void deleteRestaurant(long id);
     Restaurant getRestaurantById(long id);
     List<Restaurant> getAllRestaurants();

@@ -69,17 +69,84 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public void updateRestaurant(Restaurant restaurant) {
+    @Transactional
+    public void updateRestaurant(Restaurant restaurant, String authHeader) throws Exception {
+        try {
+            // Validate token and get current user
+            UserDTO currentUser = sequenceService.getCurrentUser(authHeader.substring(7));
+
+            // Check if user has OWNER role
+            if (currentUser == null || !currentUser.getRole().equals("OWNER")) {
+                throw new IllegalArgumentException("Only restaurant owners can update restaurant details");
+            }
+
+            // Find existing restaurant
+            Restaurant existingRestaurant = restaurantRepository.findById(restaurant.getRestaurantId())
+                    .orElseThrow(() -> new IllegalArgumentException("Restaurant not found with ID: " + restaurant.getRestaurantId()));
+
+            // Update restaurant details
+            existingRestaurant.setName(restaurant.getName());
+            existingRestaurant.setDescription(restaurant.getDescription());
+            existingRestaurant.setContactNumber(restaurant.getContactNumber());
+            existingRestaurant.setEmail(restaurant.getEmail());
+            existingRestaurant.setAddress(restaurant.getAddress());
+            existingRestaurant.setArea(restaurant.getArea());
+            existingRestaurant.setCity(restaurant.getCity());
+            existingRestaurant.setState(restaurant.getState());
+            existingRestaurant.setPincode(restaurant.getPincode());
+            existingRestaurant.setCuisineType(restaurant.getCuisineType());
+            existingRestaurant.setOpeningTime(restaurant.getOpeningTime());
+            existingRestaurant.setClosingTime(restaurant.getClosingTime());
+            existingRestaurant.setIsOpen(restaurant.getIsOpen());
+            existingRestaurant.setIsPureVeg(restaurant.getIsPureVeg());
+            existingRestaurant.setAcceptsOnlineOrders(restaurant.getAcceptsOnlineOrders());
+            existingRestaurant.setAcceptsTableBooking(restaurant.getAcceptsTableBooking());
+            existingRestaurant.setHomeDelivery(restaurant.getHomeDelivery());
+            existingRestaurant.setLatitude(restaurant.getLatitude());
+            existingRestaurant.setLongitude(restaurant.getLongitude());
+            existingRestaurant.setDeliveryTimeInMin(restaurant.getDeliveryTimeInMin());
+            existingRestaurant.setDeliveryCharge(restaurant.getDeliveryCharge());
+            existingRestaurant.setImageUrl(restaurant.getImageUrl());
+            existingRestaurant.setPaymentMethods(restaurant.getPaymentMethods());
+            existingRestaurant.setAdditionalServices(restaurant.getAdditionalServices());
+            existingRestaurant.setSocialMediaLinks(restaurant.getSocialMediaLinks());
+            existingRestaurant.setWebsiteUrl(restaurant.getWebsiteUrl());
+
+            // Update timestamp
+            existingRestaurant.setUpdatedAt(LocalDateTime.now());
+
+            // Save updated restaurant
+            restaurantRepository.save(existingRestaurant);
+        } catch (Exception e) {
+            log.error("Exception occurred while updating restaurant details: {}", ExceptionUtils.getStackTrace(e));
+            throw e;
+        }
     }
 
     @Override
     public void deleteRestaurant(long id) {
         // Implementation for deleting a restaurant
+        try {
+            Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Restaurant not found with ID: " + id));
+            if (restaurant.getOwner() != null) {
+                ownerRepository.deleteById(restaurant.getOwner().getOwnerId());
+            }
+            if (restaurant.getRestaurantLicence() != null) {
+                licenceRepository.deleteById(restaurant.getRestaurantLicence().getLicenceId());
+            }
+            restaurantRepository.deleteById(id);
+        } catch (Exception e) {
+            log.error(" Exception occurred while deleting restaurant details {} ", ExceptionUtils.getStackTrace(e));
+            throw new IllegalArgumentException("Restaurant not found with ID: " + id);
+        }
+
     }
 
     @Override
     public Restaurant getRestaurantById(long id) {
         // Implementation for getting a restaurant by ID
+
+
         return null;
     }
 
