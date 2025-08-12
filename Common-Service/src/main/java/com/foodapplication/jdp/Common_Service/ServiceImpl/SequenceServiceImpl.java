@@ -24,39 +24,27 @@ import java.util.List;
 @Service
 public class SequenceServiceImpl implements SequenceService {
 
-    private final WebClient webClient;
     private final SequenceRepository sequenceRepository;
-    @Autowired
-    private WebClient.Builder webClientBuilder;
+    private final WebClient.Builder webClientBuilder;
+
 
     @Autowired
     public SequenceServiceImpl(SequenceRepository sequenceRepository, WebClient.Builder webClientBuilder) {
         this.sequenceRepository = sequenceRepository;
-        this.webClient = webClientBuilder.baseUrl("http://user-authentication-service").build();
+        this.webClientBuilder = webClientBuilder;
     }
 
 
-//    public UserDTO getCurrentUser(String token) {
-//        return webClient.get()
-////                .uri("/userAuthService/userInfo")
-//                .uri("/userAuthService/userInfo")
-//                .header("Authorization",
-//                        token)
-//                .retrieve()
-//                .bodyToMono(UserDTO.class)
-//                .block(); // or use async if needed
-//    }
-
-
-    public UserDTO getCurrentUser(String token) {
-        return webClientBuilder.baseUrl("http://user-authentication-service") // Eureka service name
-                .build().get().uri("/userAuthService/userInfo").header("Authorization", token).retrieve().bodyToMono(UserDTO.class).block();
+    public UserDTO getCurrentUser(String authHeader) {
+        String finalHeader = authHeader.startsWith("Bearer ") ? authHeader : "Bearer " + authHeader;
+        return webClientBuilder.baseUrl("http://USER-AUTHENTICATION-SERVICE") // Eureka service name
+                .build().get().uri("/userAuthService/userInfo").header("Authorization", finalHeader).retrieve().bodyToMono(UserDTO.class).block();
     }
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
-    public long getSequenceByCustomer(String tableName) throws Exception {
+    public long getSequenceByCustomer(String tableName) {
         log.info("trying to generate sequence id value from repository");
         BigDecimal sequence = BigDecimal.ZERO;
         long newSequence;
@@ -68,34 +56,20 @@ public class SequenceServiceImpl implements SequenceService {
         BigDecimal cycle = BigDecimal.ZERO;
         synchronized (this) {
             List<Sequence> ajSequenceList = sequenceRepository.findByTableName(tableName.toUpperCase());
-
-
             if (ajSequenceList != null && !ajSequenceList.isEmpty()) {
-
                 ajSequence = ajSequenceList.get(0);
                 incrementValue = ajSequence.getSeqIncrementVal();
                 currentValue = ajSequence.getSeqCurrVal();
                 maxValue = (ajSequence.getSeqMaxVal() != null ? ajSequence.getSeqMaxVal() : BigDecimal.valueOf(-1));
-
                 cycle = ajSequence.getSeqCycle();
-
             }
-
-            // increment the current value with the incremental value
             sequence = currentValue.add(incrementValue);
-
-            // if the value is more than the maxValue of the sequence, restarting from start
             if (!(maxValue.compareTo(BigDecimal.valueOf(-1)) == 0) && sequence.compareTo(maxValue) > 0 && cycle.compareTo(BigDecimal.ONE) == 0) {
-                // log.info("value is more than the maxValue - restarting from start");
                 currentValue = currentValue.add(incrementValue);
                 sequence = currentValue;
             }
-
             sequenceId = sequenceId + sequence.toPlainString();
             newSequence = new BigDecimal(sequenceId).longValue();
-
-
-            // Updates AjSequence table with new sequence generated.
             if (ajSequence != null) {
                 ajSequence.setSeqCurrVal(sequence);
                 sequenceRepository.save(ajSequence);
@@ -103,6 +77,4 @@ public class SequenceServiceImpl implements SequenceService {
         }
         return newSequence;
     }
-
-
 }
