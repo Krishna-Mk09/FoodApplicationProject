@@ -265,13 +265,13 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email);
         user.setSecondaryEmail(bean.getUserBusinessEmail());
         user.setAadhaarNumber(bean.getAadhaarNumber());
-        user.setGstNumber(bean.getGovernment_issued_id());
         user.setLicenseNumber(bean.getLicenseNumber());
         user.setPanNumber(bean.getPanNumber());
-        user.setProfilePhoto(bean.getProfilePhoto());
         user.setRestaurantPhoto(bean.getRestaurantPhoto());
         user.setRole("OWNER");
         user.setNameAsInLicense(bean.getNameAsInLicense());
+        user.setUserName(bean.getUserName());
+        user.setGstNumber(bean.getGstNumber());
         userRepository.save(user);
     }
 }
