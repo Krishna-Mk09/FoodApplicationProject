@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,13 +33,13 @@ public class RestaurantController {
     @PreAuthorize("hasRole('OWNER')")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "success")})
     @PostMapping("/addRestaurant")
-    public void addRestaurant(@RequestBody Restaurant restaurant, @RequestHeader("Authorization") String authHeader) throws Exception {
+    public ResponseEntity<String> addRestaurant(@RequestBody Restaurant restaurant, @RequestHeader("Authorization") String authHeader) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
         try {
             log.info("User Controller.login: user: ");
-            restaurantService.addRestaurant(restaurant, authHeader);
+            String ans = restaurantService.addRestaurant(restaurant, authHeader);
+            return new ResponseEntity<>(ans, HttpStatus.CREATED);
         } catch (Exception e) {
-
             log.error(" Exception  occurred while user log in {}", ExceptionUtils.getStackTrace(e));
             throw new Exception(e.getMessage());
         }

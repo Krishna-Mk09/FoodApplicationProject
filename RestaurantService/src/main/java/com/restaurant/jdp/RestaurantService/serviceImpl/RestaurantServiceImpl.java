@@ -4,6 +4,7 @@ import com.foodapplication.jdp.Common_Service.Entity.UserDTO;
 import com.foodapplication.jdp.Common_Service.Service.SequenceService;
 import com.restaurant.jdp.RestaurantService.config.SecurityConfig;
 import com.restaurant.jdp.RestaurantService.entity.Restaurant;
+import com.restaurant.jdp.RestaurantService.entity.RestaurantLicence;
 import com.restaurant.jdp.RestaurantService.entity.RestaurantOwner;
 import com.restaurant.jdp.RestaurantService.repository.LicenceRepository;
 import com.restaurant.jdp.RestaurantService.repository.OwnerRepository;
@@ -30,7 +31,7 @@ public class RestaurantServiceImpl implements RestaurantService {
 
 
     @Autowired
-    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, LicenceRepository licenceRepository, OwnerRepository ownerRepository, SequenceService sequenceService, SecurityConfig securityConfig) {
+    public RestaurantServiceImpl(RestaurantRepository restaurantRepository, LicenceRepository licenceRepository, OwnerRepository ownerRepository, SequenceService sequenceService, SecurityConfig securityConfig, OwnerRepository restaurantOwnerRepository) {
         this.restaurantRepository = restaurantRepository;
         this.licenceRepository = licenceRepository;
         this.ownerRepository = ownerRepository;
@@ -39,34 +40,51 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     @Transactional
-    public void addRestaurant(Restaurant restaurant, String authHeader) throws Exception {
-        long restaurantId = 0L;
-        long restaurantLicenseId = 0L;
-        UserDTO currentUser = sequenceService.getCurrentUser(authHeader.substring(7));
+    public String addRestaurant(Restaurant restaurant, String authHeader) throws Exception {
         try {
-            restaurant.setUserId(currentUser.getUserId());
-            if (restaurant.getRestaurantLicence().getRestaurantId() == 0L) {
-                restaurantId = sequenceService.getSequenceByCustomer("RESTAURANTS");
+            UserDTO currentUser = sequenceService.getCurrentUser(authHeader.substring(7));
+
+            if (restaurant.getRestaurantLicence() == null) {
+                restaurant.setRestaurantLicence(new RestaurantLicence());
+            }
+            if (restaurant.getRestaurantId() == null || restaurant.getRestaurantId() == 0L) {
+                long restaurantId = sequenceService.getSequenceByCustomer("RESTAURANTS");
                 restaurant.setRestaurantId(restaurantId);
-                restaurant.getRestaurantLicence().setRestaurantId(restaurantId);
             }
-            if (restaurant.getOwner() != null && restaurant.getOwner().getOwnerId() != 0) {
-                RestaurantOwner owner = ownerRepository.findById(restaurant.getOwner().getRestaurantId()).orElseThrow(() -> new IllegalArgumentException("Owner not found with ID: " + restaurant.getOwner().getOwnerId()));
-                restaurant.setOwner(owner);
+            RestaurantOwner restaurantOwner = new RestaurantOwner();
+            restaurantOwner.setOwnerId(sequenceService.getSequenceByCustomer("RESTAURANT_OWNERS"));
+            restaurantOwner.setUserId(currentUser.getUserId());
+            restaurantOwner.setRestaurantId(restaurant.getRestaurantId());
+            restaurantOwner.setEmail(currentUser.getSecondaryEmail());
+            restaurantOwner.setPhoneNumber(currentUser.getPhoneNum());
+            ownerRepository.save(restaurantOwner);
+            restaurant.setOwner(restaurantOwner);
+            RestaurantLicence licence = restaurant.getRestaurantLicence();
+            if (licence.getLicenceId() == null || licence.getLicenceId() == 0L) {
+                licence.setLicenceId(sequenceService.getSequenceByCustomer("RESTAURANT_LICENCES"));
             }
-            if (restaurant.getRestaurantLicence().getLicenceId() == 0L) {
-                restaurantLicenseId = sequenceService.getSequenceByCustomer("RESTAURANT_LICENCES");
-                restaurant.getRestaurantLicence().setLicenceId(restaurantLicenseId);
+            licence.setRestaurantId(restaurant.getRestaurantId());
+            licence.setLicenceName(currentUser.getNameAsInLicense());
+            licence.setLicenceNumber(currentUser.getLicenseNumber());
+            licence.setNameAsInLicense(currentUser.getNameAsInLicense());
+            licence.setUserId(currentUser.getUserId());
+            licenceRepository.save(licence);
+            restaurant.setRestaurantLicence(licence);
+            if (restaurant.getItems() != null) {
+                restaurant.getItems().forEach(item -> item.setRestaurant(restaurant));
             }
             LocalDateTime now = LocalDateTime.now();
+            restaurant.setUserId(currentUser.getUserId());
             restaurant.setCreatedAt(now);
             restaurant.setUpdatedAt(now);
-            restaurantRepository.save(restaurant);
+             restaurantRepository.save(restaurant);
+             return "Successfully Restaurant Saved!!!";
         } catch (Exception e) {
-            log.error(" Exception occurred while saving restaurant details {} ", ExceptionUtils.getStackTrace(e));
+            log.error("Exception occurred while saving restaurant details: {}", ExceptionUtils.getStackTrace(e));
             throw e;
         }
     }
+
 
     @Override
     @Transactional
