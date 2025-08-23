@@ -37,7 +37,7 @@ public class JwtFilter extends GenericFilterBean {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         String path = httpRequest.getRequestURI();
-        if (path.matches("^/userAuthService/registerUser$") || path.matches("^/userAuthService/login$") || path.matches("^/userAuthService/send-otp/.*$") || path.matches("^/userAuthService/verify-otp/.*$") || path.matches("^/v3/api-docs/.*$") || path.matches("^/swagger-ui/.*$")) {
+        if (path.matches("^/userAuthService/registerUser$") || path.matches("^/userAuthService/login$") || path.matches("^/userAuthService/send-otp/.*$") || path.matches("^/userAuthService/verify-otp/.*$") || path.matches("^/userAuthService/google/.*$") || path.matches("^/google/.*$") || path.matches("^/v3/api-docs/.*$") || path.matches("^/swagger-ui/.*$")) {
             chain.doFilter(request, response);
             return;
         }
