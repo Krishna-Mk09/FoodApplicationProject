@@ -25,7 +25,6 @@ public class Items {
     private Boolean isVeg; // True if vegetarian
     private Boolean isAvailable; // True if available to order
     private String imageUrl; // Dish image
-    private LocalDateTime createdAt; // Timestamp
     @ManyToOne
     @JoinColumn(name = "RESTAURANT_ID")
     private Restaurant restaurant;

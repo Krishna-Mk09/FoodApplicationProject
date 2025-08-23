@@ -21,6 +21,10 @@ public class SecurityTokenGeneratorImpl implements SecurityTokenGenerator {
 
     @Override
     public String generateToken(User user) {
-        return Jwts.builder().setSubject(user.getEmail()).setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)).claim("role", user.getRole()).claim("isActive", user.getIsActive()).claim("username", user.getUserName()).signWith(SECRET_KEY, SignatureAlgorithm.HS256).compact();
+        return Jwts.builder().setSubject(user.getEmail()).setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .claim("role", user.getRole()).claim("isActive", user.getIsActive())
+                .claim("username", user.getUserName())
+                .signWith(SECRET_KEY, SignatureAlgorithm.HS256).compact();
     }
 }

@@ -13,13 +13,12 @@ import org.springframework.context.annotation.Bean;
 @Setter
 @Getter
 public class UserUpdate {
+    String userName;
     String userBusinessEmail;
     String panNumber;
-    String Government_issued_id;
     Long aadhaarNumber;
-    byte[] profilePhoto;
     byte[] restaurantPhoto;
     String nameAsInLicense;
     String licenseNumber;
-
+    String gstNumber;
 }
