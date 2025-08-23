@@ -90,4 +90,17 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Address> address;
 
+
+    public User(String email, String userName,byte[] profilePhoto) {
+        this.email = email;
+        this.userName = userName;
+        this.firstName=userName;
+        this.createdBy=email;
+        this.profilePhoto=profilePhoto;
+        this.isActive = true;
+        this.role = "USER";
+        this.creationDate = LocalDateTime.now();
+    }
 }
+
+

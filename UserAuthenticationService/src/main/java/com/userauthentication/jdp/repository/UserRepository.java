@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 /*
  * Author Name : M.V.Krishna
  * Date: 27-02-2025
@@ -17,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByUserName(String userName);
+    Optional<User> findByEmail(String email);
 
-    User findByEmail(String email);
 
     User findByPhoneNum(String phoneNum);
 
