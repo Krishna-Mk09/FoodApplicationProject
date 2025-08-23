@@ -117,7 +117,7 @@ public class Restaurant {
     @Column(name = "WEBSITE_URL", length = 500)
     private String websiteUrl;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "OWNER_ID")
     private RestaurantOwner owner;
 
@@ -128,11 +128,7 @@ public class Restaurant {
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private List<Items> items;
 
-
     //    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     //    private List<RestaurantReview> reviews;
-
-    //    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    //    private List<RestaurantOffer> offers;
 
 }
