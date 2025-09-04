@@ -24,7 +24,8 @@ public class MenuItemEvent {
     private String description;
     private String category;
     private Boolean availability;
-    private String imageUrl;
+    private byte[] image;
     private String eventType;
     private String timestamp;
+    private Boolean isOpen;
 }
