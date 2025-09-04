@@ -126,7 +126,7 @@ public class Restaurant {
     private RestaurantLicence restaurantLicence;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
-    private List<Items> items;
+    private List<Menu> menuList;
 
     //    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     //    private List<RestaurantReview> reviews;

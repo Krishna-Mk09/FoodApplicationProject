@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,16 +32,44 @@ public class SecurityConfig {
     }
 
     @Bean
+    public WebClient.Builder webClientBuilder() {
+        return WebClient.builder();
+    }
+
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http.csrf(AbstractHttpConfigurer::disable)
+//                .authorizeHttpRequests(auth ->
+//                        auth.requestMatchers("/userAuthService/registerUser", "/userAuthService/login",
+//                                        "/userAuthService/send-otp/**", "/userAuthService/verify-otp/**",
+//                                        "/google/**","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+//                                .permitAll().requestMatchers("/admin/**")
+//                                .hasRole("ADMIN").requestMatchers("/userAuthService/deleteUser/**")
+//                                .hasRole("ADMIN").requestMatchers("/userAuthService/**")
+//                                .hasRole("USER").anyRequest().authenticated())
+//                .sessionManagement(session ->
+//                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//        http.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
+//        return http.build();
+//    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> auth.requestMatchers("/userAuthService/registerUser", "/userAuthService/login", "/userAuthService/send-otp/**", "/userAuthService/verify-otp/**","/google/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll().requestMatchers("/admin/**").hasRole("ADMIN").requestMatchers("/userAuthService/deleteUser/**").hasRole("ADMIN").requestMatchers("/userAuthService/**").hasRole("USER").anyRequest().authenticated()).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.csrf(csrf -> csrf.disable()).authorizeHttpRequests
+                        (auth -> auth.requestMatchers("/userAuthService/registerUser",
+                                        "/userAuthService/login", "/userAuthService/send-otp/**",
+                                        "/userAuthService/verify-otp/**", "/v3/api-docs/**", "/swagger-ui/**",
+                                        "/swagger-ui.html").permitAll().requestMatchers("/admin/**")
+                                .hasRole("ADMIN")
+                                .requestMatchers("/userAuthService/deleteUser/**").hasRole("ADMIN")
+                                .requestMatchers("/userAuthService/**").hasAnyRole("USER","OWNER").anyRequest()
+                                .authenticated())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    @Bean
-    public WebClient.Builder webClientBuilder() {
-        return WebClient.builder();
-    }
 
 
 }

@@ -1,6 +1,6 @@
 package com.userauthentication.jdp.service;
 
-import com.userauthentication.jdp.entity.EmailRequest;
+import com.userauthentication.jdp.beans.EmailRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

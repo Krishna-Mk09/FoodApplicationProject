@@ -10,7 +10,7 @@
 // * Represents a customer review and rating for a restaurant.
 // */
 //@Entity
-//@Table(name = "restaurant_reviews")
+//@Table(name = "RESTAURENT_REVIEWS")
 //@Getter
 //@Setter
 //@NoArgsConstructor
