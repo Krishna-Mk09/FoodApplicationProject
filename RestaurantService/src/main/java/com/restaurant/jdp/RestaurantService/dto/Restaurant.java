@@ -23,7 +23,7 @@ public class Restaurant {
     private String restaurantName;
     private String restaurantAddress;
     private String restaurantEmail;
-    private byte[] image;
+    private String image;
     private Boolean isOpen;
     private String city;
     private String state;
