@@ -20,16 +20,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByUserName(String userName);
     Optional<User> findByEmail(String email);
-
-
     User findByPhoneNum(String phoneNum);
-
     User findByUserNameAndPassword(String userName, String password);
-
     User findByEmailAndPassword(String email, String password);
-
     void deleteByUserId(long userId);
-
     boolean existsByEmailOrPhoneNum(String email, String phoneNum);
 
     @Transactional

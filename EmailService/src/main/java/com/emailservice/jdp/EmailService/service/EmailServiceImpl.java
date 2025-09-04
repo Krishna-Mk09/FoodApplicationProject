@@ -3,7 +3,10 @@ package com.emailservice.jdp.EmailService.service;
 import com.emailservice.jdp.EmailService.entity.EmailRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -17,13 +20,12 @@ import java.util.Map;
 
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class EmailServiceImpl implements EmailService {
 
-    @Autowired
-    private JavaMailSender mailSender;
-
-    @Autowired
-    private TemplateEngine templateEngine;
+    private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
 
     @Async
     public String sendEmail(EmailRequest request) {
@@ -55,4 +57,12 @@ public class EmailServiceImpl implements EmailService {
         }
         return "Email Sent Successfully";
     }
+
+
+//    @KafkaListener(topics = "email", groupId = "emailService")
+//    public void consumeEmail(EmailRequest emailRequest) {
+//        log.info("Consumed from Kafka: {}", emailRequest);
+//        sendEmail(emailRequest);
+//        log.info(" Email sent successfully to {}", emailRequest.getSenderEmail());
+//    }
 }

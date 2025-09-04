@@ -4,8 +4,9 @@ import com.order.jdp.orderservice.dto.OrderDTO;
 import com.order.jdp.orderservice.dto.OrderItemsDTO;
 import com.order.jdp.orderservice.entity.Order;
 import com.order.jdp.orderservice.service.OrderService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,24 +16,23 @@ import java.util.List;
 @Slf4j
 @RequestMapping("/order")
 @RestController
+@RequiredArgsConstructor
 public class OrderController {
 
-    @Autowired
-    private OrderService orderService;
+    private final OrderService orderService;
 
-    @PostMapping( value = "/createOrder" , produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/createOrder", produces = MediaType.APPLICATION_JSON_VALUE)
     public Order createOrder(@RequestBody Order order) {
         log.info("OrderController.createOrder");
-        Order saveOrder = null;
+        Order saveOrder;
         try {
             log.info("OrderController.createOrder: order: {}", order);
             saveOrder = orderService.createOrder(order);
             log.info("OrderController.createOrder: saveOrder: {}", saveOrder);
         } catch (Exception e) {
-            log.error("OrderController.createOrder: Exception: {}", e.getStackTrace());
+            log.error("OrderController.createOrder: Exception: {}", ExceptionUtils.getStackTrace(e));
             throw new RuntimeException(e);
         }
-
         return saveOrder;
     }
 
@@ -56,13 +56,13 @@ public class OrderController {
     @PostMapping("/getOrderDetails")
     public List<OrderItemsDTO> getOrderDetails(@RequestBody OrderDTO orderDTO) {
         List<OrderItemsDTO> orderDetails = new ArrayList<>();
-        try{
+        try {
             log.info("OrderController.getOrderDetails");
-             orderDetails = orderService.getOrderDetails(orderDTO);
+            orderDetails = orderService.getOrderDetails(orderDTO);
             log.info("OrderController.getOrderDetails: Order details fetched successfully");
 
-        }catch (Exception e) {
-            log.error("OrderController.getOrderDetails: Exception: {}", e.getStackTrace());
+        } catch (Exception e) {
+            log.error("OrderController.getOrderDetails: Exception: {}", ExceptionUtils.getStackTrace(e));
             throw new RuntimeException(e);
         }
         return orderDetails;

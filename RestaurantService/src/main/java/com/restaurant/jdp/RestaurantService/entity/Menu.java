@@ -3,19 +3,17 @@ package com.restaurant.jdp.RestaurantService.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-
 /**
  * Represents a menu item listed by a restaurant.
  */
 @Entity
-@Table(name = "ITEMS")
+@Table(name = "MENU")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Items {
+public class Menu {
     @Id
     private Long id;
     private String name; // Name of the dish
@@ -24,7 +22,8 @@ public class Items {
     private String category; // e.g., "Starter", "Main Course"
     private Boolean isVeg; // True if vegetarian
     private Boolean isAvailable; // True if available to order
-    private String imageUrl; // Dish image
+    private byte[] imageUrl; // Dish image
+    private Integer quantity;
     @ManyToOne
     @JoinColumn(name = "RESTAURANT_ID")
     private Restaurant restaurant;
