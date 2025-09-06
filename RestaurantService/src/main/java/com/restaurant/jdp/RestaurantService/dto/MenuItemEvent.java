@@ -17,15 +17,15 @@ import lombok.NoArgsConstructor;
 @Builder
 public class MenuItemEvent {
     private Long itemId;
+    private Long restaurantId;
     private String itemName;
     private Double price;
     private Integer quantity;
-    private Long restaurantId;
     private String description;
     private String category;
     private Boolean availability;
-    private byte[] image;
+    private String itemImage;
     private String eventType;
     private String timestamp;
-    private Boolean isOpen;
+
 }

@@ -3,6 +3,8 @@ package com.restaurant.jdp.RestaurantService.serviceImpl;
 import com.foodapplication.jdp.Common_Service.Entity.UserDTO;
 import com.foodapplication.jdp.Common_Service.Service.SequenceService;
 import com.restaurant.jdp.RestaurantService.dto.MenuItemEvent;
+import com.restaurant.jdp.RestaurantService.dto.RestaurantDto;
+import com.restaurant.jdp.RestaurantService.entity.Menu;
 import com.restaurant.jdp.RestaurantService.entity.Restaurant;
 import com.restaurant.jdp.RestaurantService.entity.RestaurantLicence;
 import com.restaurant.jdp.RestaurantService.entity.RestaurantOwner;
@@ -34,67 +36,59 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final LicenceRepository licenceRepository;
     private final OwnerRepository ownerRepository;
     private final SequenceService sequenceService;
-    private final KafkaTemplate<String, MenuItemEvent> kafkaTemplate;
+    private final KafkaTemplate<String, RestaurantDto> kafkaTemplate;
 
     @Override
     @Transactional
     public String addRestaurant(Restaurant restaurant, String authHeader) throws Exception {
         try {
+            long restaurantsId =0;
             UserDTO currentUser = sequenceService.getCurrentUser(authHeader.substring(7));
             Restaurant byEmail = this.findByEmail(restaurant.getEmail());
             if (byEmail != null && byEmail.getEmail().equalsIgnoreCase(restaurant.getEmail()))
                 return "Restaurant Already Exists";
-            if (restaurant.getRestaurantLicence() == null) restaurant.setRestaurantLicence(new RestaurantLicence());
 
             if (restaurant.getRestaurantId() == null || restaurant.getRestaurantId() == 0L) {
-                long restaurantId = sequenceService.getSequenceByCustomer("RESTAURANTS");
-                restaurant.setRestaurantId(restaurantId);
+                 restaurantsId = sequenceService.getSequenceByCustomer("RESTAURANTS");
+                restaurant.setRestaurantId(restaurantsId);
             }
-            RestaurantOwner restaurantOwner = new RestaurantOwner();
-            restaurantOwner.setOwnerId(sequenceService.getSequenceByCustomer("RESTAURANT_OWNERS"));
-            restaurantOwner.setUserId(currentUser.getUserId());
-            restaurantOwner.setRestaurantId(restaurant.getRestaurantId());
-            restaurantOwner.setEmail(currentUser.getSecondaryEmail());
-            restaurantOwner.setPhoneNumber(currentUser.getPhoneNum());
-            ownerRepository.save(restaurantOwner);
-            restaurant.setOwner(restaurantOwner);
-            RestaurantLicence licence = restaurant.getRestaurantLicence();
-            if (licence.getLicenceId() == null || licence.getLicenceId() == 0L)
-                licence.setLicenceId(sequenceService.getSequenceByCustomer("RESTAURANT_LICENCES"));
 
-            licence.setRestaurantId(restaurant.getRestaurantId());
-            licence.setLicenceName(currentUser.getNameAsInLicense());
-            licence.setLicenceNumber(currentUser.getLicenseNumber());
-            licence.setNameAsInLicense(currentUser.getNameAsInLicense());
-            licence.setUserId(currentUser.getUserId());
+            RestaurantOwner owner = RestaurantOwner.builder()
+                    .ownerId(sequenceService.getSequenceByCustomer("RESTAURANT_OWNERS"))
+                    .userId(currentUser.getUserId())
+                    .email(currentUser.getSecondaryEmail())
+                    .phoneNumber(currentUser.getPhoneNum())
+                    .restaurantId(restaurant.getRestaurantId())
+                    .build();
+            ownerRepository.save(owner);
+            restaurant.setOwner(owner);
+
+            RestaurantLicence licence = RestaurantLicence.builder()
+                    .licenceId(sequenceService.getSequenceByCustomer("RESTAURANT_LICENCES"))
+                    .restaurantId(restaurant.getRestaurantId())
+                    .licenceName(currentUser.getNameAsInLicense())
+                    .nameAsInLicense(currentUser.getNameAsInLicense())
+                    .licenceNumber(currentUser.getLicenseNumber())
+                    .userId(currentUser.getUserId())
+                    .build();
             licenceRepository.save(licence);
             restaurant.setRestaurantLicence(licence);
-            List<MenuItemEvent> events = null;
+
             if (restaurant.getMenuList() != null) {
-                events = restaurant.getMenuList().stream().map(item -> {
-                    try {
-                        item.setRestaurant(restaurant);
+                for (Menu item : restaurant.getMenuList()) {
+                    if (item.getId() == null || item.getId() == 0L)
                         item.setId(sequenceService.getSequenceByCustomer("MENU"));
-                    } catch (Exception e) {
-                        log.error("Exception occurred while getting sequence value: {}", ExceptionUtils.getStackTrace(e));
-                        throw new IllegalArgumentException("Error while generating Menu ID");
-                    }
-                    return MenuItemEvent.builder().itemId(item.getId())
-                            .restaurantId(restaurant.getRestaurantId()).description(item.getDescription())
-                            .isOpen(restaurant.getIsOpen()).availability(item.getIsAvailable())
-                            .category(item.getCategory()).image(item.getImageUrl()).eventType("RestaurantCreated")
-                            .itemName(item.getName()).price(item.getPrice()).quantity(item.getQuantity()).build();
-                }).toList();
+                    item.setRestaurant(restaurant);
+                }
             }
+
             LocalDateTime now = LocalDateTime.now();
             restaurant.setUserId(currentUser.getUserId());
             restaurant.setCreatedAt(now);
             restaurant.setUpdatedAt(now);
-            restaurantRepository.save(restaurant);
-
-            if (events != null && !events.isEmpty()) {
-                publishMenuEventsAfterCommit(events);
-            }
+            Restaurant savedRestaurant = restaurantRepository.save(restaurant);
+            RestaurantDto restaurantDto = RestaurantDto.builder().restaurantId(savedRestaurant.getRestaurantId()).restaurantName(savedRestaurant.getName()).restaurantEmail(savedRestaurant.getEmail()).restaurantAddress(savedRestaurant.getAddress()).image(savedRestaurant.getImageUrl()).latitude(savedRestaurant.getLatitude()).longitude(savedRestaurant.getLongitude()).city(savedRestaurant.getCity()).state(savedRestaurant.getState()).restaurantType(savedRestaurant.getCuisineType()).closingTime(savedRestaurant.getClosingTime()).openingTime(savedRestaurant.getOpeningTime()).isOpen(savedRestaurant.getIsOpen()).paymentMethods(savedRestaurant.getPaymentMethods()).menuItemEvent(savedRestaurant.getMenuList() != null ? savedRestaurant.getMenuList().stream().map(item -> MenuItemEvent.builder().itemId(item.getId()).restaurantId(savedRestaurant.getRestaurantId()).itemName(item.getName()).description(item.getDescription()).price(item.getPrice()).quantity(item.getQuantity()).category(item.getCategory()).availability(item.getIsAvailable()).itemImage(item.getImageUrl()).timestamp(now.toString()).eventType("RestaurantCreated").build()).toList() : null).build();
+            publishRestaurantAfterCommit(restaurantDto);
 
             return "Successfully Restaurant Saved!!!";
         } catch (Exception e) {
@@ -103,6 +97,11 @@ public class RestaurantServiceImpl implements RestaurantService {
         }
     }
 
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void publishRestaurantAfterCommit(RestaurantDto dto) {
+        kafkaTemplate.send(TOPIC, String.valueOf(dto.getRestaurantId()), dto);
+        log.info("Published RestaurantDto AFTER commit: {}", dto);
+    }
 
     @Override
     @Transactional
@@ -165,6 +164,9 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
 
+
+
+
     @Override
     public Restaurant findByEmail(String email) {
         return restaurantRepository.findByEmail(email);
@@ -178,25 +180,15 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public Page<Restaurant> findAll(Pageable pageable) {
         return restaurantRepository.findAll(pageable);
-
     }
 
     public Page<Restaurant> getAllRestaurants(Pageable pageable) {
         return restaurantRepository.findAll(pageable);
     }
 
-
     @Override
     public List<Restaurant> searchRestaurants(String query) {
         return null;
-    }
-
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void publishMenuEventsAfterCommit(List<MenuItemEvent> events) {
-        events.forEach(event -> {
-            kafkaTemplate.send(TOPIC, String.valueOf(event.getItemId()), event);
-            log.info(" Published MenuItemEvent AFTER commit: {}", event);
-        });
     }
 
 }

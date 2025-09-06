@@ -1,15 +1,24 @@
 package com.order.jdp.orderservice.entity;
 
 
-import jakarta.persistence.*;
-
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /*
  * Author Name : M.V.Krishna
  * Date: 18-08-2025
  * Created With: IntelliJ IDEA Ultimate Edition
  */
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "CART")
 public class Cart {
@@ -23,6 +32,4 @@ public class Cart {
     @Column(name = "RESTAURANT_ID", nullable = false)
     private Long restaurantId;
 
-    @OneToMany(mappedBy = "Cart", cascade = CascadeType.ALL)
-    List<CartItems> cartItemsList;
 }

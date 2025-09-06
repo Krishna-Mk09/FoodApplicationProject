@@ -22,7 +22,7 @@ public class Menu {
     private String category; // e.g., "Starter", "Main Course"
     private Boolean isVeg; // True if vegetarian
     private Boolean isAvailable; // True if available to order
-    private byte[] imageUrl; // Dish image
+    private String imageUrl; // Dish image
     private Integer quantity;
     @ManyToOne
     @JoinColumn(name = "RESTAURANT_ID")

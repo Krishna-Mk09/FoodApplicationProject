@@ -128,8 +128,8 @@ public class UserServiceImpl implements UserService {
                 emailRequest.setTemplateName("login-detect");
                 emailRequest.setUserName(user.getUserName());
                 emailRequest.setSubject("Login Acknowledgement");
-              //  kafkaTemplate.send(TOPIC, emailRequest.getSenderEmail(), emailRequest);
-               emailClient.sendEmail(emailRequest);
+               kafkaTemplate.send(TOPIC, emailRequest.getSenderEmail(), emailRequest);
+              // emailClient.sendEmail(emailRequest);
             }
         } catch (Exception e) {
             log.error("Exception occurred while logging in{}", ExceptionUtils.getStackTrace(e));
@@ -156,8 +156,8 @@ public class UserServiceImpl implements UserService {
         emailRequest.setDevice("System");
         emailRequest.setIpaddress("Server");
         emailRequest.setUserName("user");
-       // kafkaTemplate.send(TOPIC, emailRequest.getSenderEmail(), emailRequest);
-        emailClient.sendEmail(emailRequest);
+        kafkaTemplate.send(TOPIC, emailRequest.getSenderEmail(), emailRequest);
+       // emailClient.sendEmail(emailRequest);
         return "OTP sent successfully to " + email;
     }
 
@@ -251,6 +251,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUser(String email, UserUpdate bean) {
+        try{
+
         Optional<User> userOptional = userRepository.findByEmail(email);
         User user = userOptional.get();
         user.setSecondaryEmail(bean.getUserBusinessEmail());
@@ -263,6 +265,10 @@ public class UserServiceImpl implements UserService {
         user.setUserName(bean.getUserName());
         user.setGstNumber(bean.getGstNumber());
         userRepository.save(user);
+        }catch (Exception e){
+            log.error("Exception occurred while updating user details{}", ExceptionUtils.getStackTrace(e));
+            throw e;
+        }
     }
 
 
