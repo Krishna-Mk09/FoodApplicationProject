@@ -17,12 +17,12 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Restaurant {
+public class RestaurantDto {
     private Long restaurantId;
     private String restaurantName;
     private String restaurantAddress;
     private String restaurantEmail;
-    private byte[] image;
+    private String image;
     private Boolean isOpen;
     private String city;
     private String state;
@@ -33,5 +33,4 @@ public class Restaurant {
     private Double longitude;
     private String paymentMethods;
     private List<MenuItemEvent> menuItemEvent;
-
 }

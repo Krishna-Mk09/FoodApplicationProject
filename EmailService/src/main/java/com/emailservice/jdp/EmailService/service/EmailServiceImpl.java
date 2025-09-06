@@ -59,10 +59,10 @@ public class EmailServiceImpl implements EmailService {
     }
 
 
-//    @KafkaListener(topics = "email", groupId = "emailService")
-//    public void consumeEmail(EmailRequest emailRequest) {
-//        log.info("Consumed from Kafka: {}", emailRequest);
-//        sendEmail(emailRequest);
-//        log.info(" Email sent successfully to {}", emailRequest.getSenderEmail());
-//    }
+    @KafkaListener(topics = "email", groupId = "emailService")
+    public void consumeEmail(EmailRequest emailRequest) {
+        log.info("Consumed from Kafka: {}", emailRequest);
+        sendEmail(emailRequest);
+        log.info(" Email sent successfully to {}", emailRequest.getSenderEmail());
+    }
 }

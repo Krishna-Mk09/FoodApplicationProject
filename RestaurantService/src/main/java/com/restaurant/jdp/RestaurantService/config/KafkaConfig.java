@@ -2,6 +2,7 @@ package com.restaurant.jdp.RestaurantService.config;
 
 
 import com.restaurant.jdp.RestaurantService.dto.MenuItemEvent;
+import com.restaurant.jdp.RestaurantService.dto.RestaurantDto;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -31,7 +32,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ProducerFactory<String, MenuItemEvent> producerFactory() {
+    public ProducerFactory<String, RestaurantDto> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -40,13 +41,13 @@ public class KafkaConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, MenuItemEvent> kafkaTemplate() {
+    public KafkaTemplate<String, RestaurantDto> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 
     @Bean
-    public ConsumerFactory<String, MenuItemEvent> consumerFactory() {
-        JsonDeserializer<MenuItemEvent> deserializer = new JsonDeserializer<>(MenuItemEvent.class);
+    public ConsumerFactory<String, RestaurantDto> consumerFactory() {
+        JsonDeserializer<RestaurantDto> deserializer = new JsonDeserializer<>(RestaurantDto.class);
         deserializer.addTrustedPackages("*");
 
         Map<String, Object> props = new HashMap<>();
@@ -59,8 +60,8 @@ public class KafkaConfig {
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, MenuItemEvent> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, MenuItemEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
+    public ConcurrentKafkaListenerContainerFactory<String, RestaurantDto> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, RestaurantDto> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }

@@ -18,7 +18,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Restaurant {
+public class RestaurantDto {
     private Long restaurantId;
     private String restaurantName;
     private String restaurantAddress;

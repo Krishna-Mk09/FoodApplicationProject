@@ -3,13 +3,16 @@ package com.order.jdp.orderservice.serviceimpl;
 import com.foodapplication.jdp.Common_Service.Service.SequenceService;
 import com.order.jdp.orderservice.dto.OrderDTO;
 import com.order.jdp.orderservice.dto.OrderItemsDTO;
+import com.order.jdp.orderservice.dto.RestaurantDto;
 import com.order.jdp.orderservice.entity.Order;
 import com.order.jdp.orderservice.entity.OrderItems;
+import com.order.jdp.orderservice.entity.RestaurantInfo;
 import com.order.jdp.orderservice.repository.OrderItemsRepository;
 import com.order.jdp.orderservice.repository.OrderRepository;
 import com.order.jdp.orderservice.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -129,7 +132,6 @@ public class OrderServiceImpl implements OrderService {
     public void getOrderByStatus() {
         // TODO document why this method is empty
     }
-
 
 
 }

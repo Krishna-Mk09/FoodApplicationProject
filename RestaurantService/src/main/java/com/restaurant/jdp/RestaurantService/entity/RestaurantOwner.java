@@ -4,9 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 /**
  * Represents the owner or manager of one or more restaurants.
  */
@@ -35,7 +32,8 @@ public class RestaurantOwner {
     private String phoneNumber;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    private List<Restaurant> restaurants;
+    @OneToOne(mappedBy = "owner", cascade = CascadeType.ALL)
+    private Restaurant restaurant;
+
 
 }

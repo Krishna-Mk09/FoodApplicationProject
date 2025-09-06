@@ -117,11 +117,11 @@ public class Restaurant {
     @Column(name = "WEBSITE_URL", length = 500)
     private String websiteUrl;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "OWNER_ID")
     private RestaurantOwner owner;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "LICENCE_ID")
     private RestaurantLicence restaurantLicence;
 
