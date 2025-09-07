@@ -22,9 +22,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 @EnableWebSecurity
 public class SecurityConfig {
     @Bean
-    public JwtFilter jwtFilter() {
-        return new JwtFilter();
-    }
+    public JwtFilter jwtFilter()      {   return new JwtFilter();  }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -36,28 +35,11 @@ public class SecurityConfig {
         return WebClient.builder();
     }
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        http.csrf(AbstractHttpConfigurer::disable)
-//                .authorizeHttpRequests(auth ->
-//                        auth.requestMatchers("/userAuthService/registerUser", "/userAuthService/login",
-//                                        "/userAuthService/send-otp/**", "/userAuthService/verify-otp/**",
-//                                        "/google/**","/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
-//                                .permitAll().requestMatchers("/admin/**")
-//                                .hasRole("ADMIN").requestMatchers("/userAuthService/deleteUser/**")
-//                                .hasRole("ADMIN").requestMatchers("/userAuthService/**")
-//                                .hasRole("USER").anyRequest().authenticated())
-//                .sessionManagement(session ->
-//                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-//        http.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
-//        return http.build();
-//    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable()).authorizeHttpRequests
                         (auth -> auth.requestMatchers("/userAuthService/registerUser",
-                                        "/userAuthService/login", "/userAuthService/send-otp/**",
+                                        "/userAuthService/login", "/userAuthService/send-otp/**",  "/google/**",
                                         "/userAuthService/verify-otp/**", "/v3/api-docs/**", "/swagger-ui/**",
                                         "/swagger-ui.html").permitAll().requestMatchers("/admin/**")
                                 .hasRole("ADMIN")
@@ -69,9 +51,6 @@ public class SecurityConfig {
         http.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
-
 }
 
 
