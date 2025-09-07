@@ -1,15 +1,18 @@
 package com.userauthentication.jdp.controller;
 
+import com.userauthentication.jdp.beans.EmailRequest;
+import com.userauthentication.jdp.beans.GoogleUserInfo;
 import com.userauthentication.jdp.serviceImpl.UserServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
 
@@ -21,15 +24,14 @@ import java.util.Map;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/google")
 public class GoogleAuthController {
 
     private final UserServiceImpl userService;
+    private final KafkaTemplate<String, EmailRequest> kafkaTemplate;
+    private static final String TOPIC = "email";
 
-    @Autowired
-    public GoogleAuthController(UserServiceImpl userService) {
-        this.userService = userService;
-    }
 
     @GetMapping("/login")
     public void redirectToGoogle(HttpServletResponse response) throws IOException {
@@ -38,13 +40,19 @@ public class GoogleAuthController {
         response.sendRedirect(url);
     }
 
-    /**
-     * Step 2: Callback after Google login
-     */
+
     @GetMapping("/callback")
     public ResponseEntity<?> googleCallback(@RequestParam("code") String code) {
         log.info("Google callback hit with code: {}", code);
-         String jwtToken = userService.handleGoogleLogin(code);
-         return ResponseEntity.ok(Map.of("jwtToken", jwtToken));
+        Map<String, String> tokenResponse =userService.exchangeCodeForToken(code);
+        GoogleUserInfo profile = userService.fetchUserProfile(tokenResponse.get("access_token"));
+        String jwtToken = userService.handleGoogleLogin(profile);
+        EmailRequest emailRequest = new EmailRequest();
+        emailRequest.setSenderEmail(profile.getEmail());
+        emailRequest.setSubject("Registration Acknowledgement");
+        emailRequest.setTemplateName("welcome-email");
+        emailRequest.setUserName(profile.getName());
+        kafkaTemplate.send(TOPIC,profile.getEmail() , emailRequest);
+        return ResponseEntity.ok(Map.of("jwtToken", jwtToken));
     }
 }

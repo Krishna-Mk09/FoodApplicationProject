@@ -11,7 +11,7 @@ import java.util.List;
 public interface RestaurantService {
     String addRestaurant(Restaurant restaurant, String authHeade) throws Exception;
 
-    void updateRestaurant(Restaurant restaurant, String authHeader) throws Exception;
+    String updateRestaurant(Restaurant restaurant, String authHeader) throws Exception;
 
     void deleteRestaurant(long id);
 

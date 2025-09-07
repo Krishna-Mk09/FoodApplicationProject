@@ -50,7 +50,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final SecurityConfig encoder;
     private final SecurityTokenGeneratorImpl SECURITY_TOKEN_GENERATOR;
-    private final EmailClient emailClient;
     private final SequenceService sequenceService;
     private final UserMapper userMapper;
     private final RestTemplate restTemplate;
@@ -96,7 +95,6 @@ public class UserServiceImpl implements UserService {
             emailRequest.setTemplateName("welcome-email");
             emailRequest.setUserName(user.getUserName());
             kafkaTemplate.send(TOPIC, emailRequest.getSenderEmail(), emailRequest);
-//            emailClient.sendEmail(emailRequest);
             return "User saved successfully";
         } catch (Exception e) {
             log.error("Exception occurred while  saving user details{} ", ExceptionUtils.getStackTrace(e));
@@ -129,7 +127,6 @@ public class UserServiceImpl implements UserService {
                 emailRequest.setUserName(user.getUserName());
                 emailRequest.setSubject("Login Acknowledgement");
                kafkaTemplate.send(TOPIC, emailRequest.getSenderEmail(), emailRequest);
-              // emailClient.sendEmail(emailRequest);
             }
         } catch (Exception e) {
             log.error("Exception occurred while logging in{}", ExceptionUtils.getStackTrace(e));
@@ -157,7 +154,6 @@ public class UserServiceImpl implements UserService {
         emailRequest.setIpaddress("Server");
         emailRequest.setUserName("user");
         kafkaTemplate.send(TOPIC, emailRequest.getSenderEmail(), emailRequest);
-       // emailClient.sendEmail(emailRequest);
         return "OTP sent successfully to " + email;
     }
 
@@ -276,10 +272,8 @@ public class UserServiceImpl implements UserService {
         return "https://accounts.google.com/o/oauth2/v2/auth" + "?client_id=" + clientId + "&redirect_uri=" + redirectUri + "&response_type=code" + "&scope=openid%20email%20profile";
     }
 
-    public String handleGoogleLogin(String code) {
+    public String handleGoogleLogin(   GoogleUserInfo profile ) {
         try {
-            Map<String, String> tokenResponse = exchangeCodeForToken(code);
-            GoogleUserInfo profile = fetchUserProfile(tokenResponse.get("access_token"));
             User user = userRepository.findByEmail(profile.getEmail()).orElseGet(() -> userRepository.save(new User(profile.getEmail(), profile.getName(), profile.getPicture().getBytes())));
             return SECURITY_TOKEN_GENERATOR.generateToken(user);
         } catch (Exception e) {
@@ -288,10 +282,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
     /**
      * Exchange authorization code for an access token
      */
-    private Map<String, String> exchangeCodeForToken(String code) {
+    public Map<String, String> exchangeCodeForToken(String code) {
         String tokenUrl = "https://oauth2.googleapis.com/token";
 
         HttpHeaders headers = new HttpHeaders();
@@ -322,7 +317,7 @@ public class UserServiceImpl implements UserService {
     /**
      * Fetch user profile from Google APIs using an access token
      */
-    private GoogleUserInfo fetchUserProfile(String accessToken) {
+    public GoogleUserInfo fetchUserProfile(String accessToken) {
         String url = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + accessToken;
         return restTemplate.getForObject(url, GoogleUserInfo.class);
     }

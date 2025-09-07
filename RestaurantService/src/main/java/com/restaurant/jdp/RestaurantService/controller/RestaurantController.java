@@ -51,12 +51,12 @@ public class RestaurantController {
 
     @PreAuthorize("hasRole('OWNER')")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "success")})
-    @PutMapping("/restaurants/{id}")
-    public void updateRestaurant(@PathVariable long id, @RequestBody Restaurant restaurant, @RequestHeader("Authorization") String authHeader) throws Exception {
+    @PostMapping("/update-restaurant")
+    public  ResponseEntity<String>  updateRestaurant( @RequestBody Restaurant restaurant, @RequestHeader("Authorization") String authHeader) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
         try {
-            restaurant.setRestaurantId(id);
-            restaurantService.updateRestaurant(restaurant, authHeader);
+            String value = restaurantService.updateRestaurant(restaurant, authHeader);
+            return new ResponseEntity<>(value , HttpStatus.CREATED);
         } catch (Exception e) {
             log.error("Exception occurred while updating restaurant: {}", e.getMessage());
             throw new Exception(e.getMessage());
