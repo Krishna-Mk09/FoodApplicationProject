@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Razorpay Payment Test</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      padding: 40px;
+      width: 350px;
+      text-align: center;
+      color: #333;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+      color: #2575fc;
+    }
+
+    p {
+      font-size: 14px;
+      margin-bottom: 25px;
+      color: #555;
+    }
+
+    #pay-btn {
+      background: linear-gradient(90deg, #ff512f, #dd2476);
+      color: #fff;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.3s ease;
+    }
+
+    #pay-btn:hover {
+      transform: scale(1.05);
+      background: linear-gradient(90deg, #ff6a4d, #e23692);
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <h2>Make a Payment</h2>
+  <p>Click the button below to pay securely with Razorpay.</p>
+  <button id="pay-btn">💳 Pay ₹5.00</button>
+  <div class="footer">Powered by Razorpay</div>
+</div>
+
+<script>
+  document.getElementById("pay-btn").onclick = async function () {
+    try {
+      // ✅ Call backend to create order
+      const response = await fetch("/api/payment/create-order?amount=500&currency=INR&receipt=txn_123", {
+        method: "POST"
+      });
+      const data = await response.json();
+      console.log("Order Response:", data);
+
+      if (data.status === "success") {
+        var options = {
+          "key": "rzp_test_RCbHeF5jZhvhmX", // from application.properties
+          "amount": data.amount, // amount in paise
+          "currency": data.currency,
+          "name": "Teja's Test Store",
+          "description": "Demo Transaction",
+          "order_id": data.orderId,  // from backend
+          "handler": function (response) {
+            alert("✅ Payment Success! Payment ID: " + response.razorpay_payment_id);
+
+            // ✅ Call backend verify API with form params
+            const params = new URLSearchParams();
+            params.append("orderId", response.razorpay_order_id);
+            params.append("paymentId", response.razorpay_payment_id);
+            params.append("signature", response.razorpay_signature);
+
+            fetch("/api/payment/verify", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+              },
+              body: params
+            })
+                    .then(res => res.json())
+                    .then(verifyRes => {
+                      console.log("Verify Response:", verifyRes);
+                      alert("Verification Result: " + verifyRes.status);
+                    });
+          },
+          "theme": {
+            "color": "#2575fc"
+          }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+      } else {
+        alert("❌ Error creating order: " + data.message);
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      alert("Something went wrong, check console logs.");
+    }
+  }
+</script>
+</body>
+</html>
