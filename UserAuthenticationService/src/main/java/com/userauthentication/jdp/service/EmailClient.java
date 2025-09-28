@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "EmailService", url = "http://localhost:8081/emailService")
 public interface EmailClient {
+
     @PostMapping("/send-email")
     void sendEmail(@RequestBody EmailRequest emailRequest)throws Exception;
 }

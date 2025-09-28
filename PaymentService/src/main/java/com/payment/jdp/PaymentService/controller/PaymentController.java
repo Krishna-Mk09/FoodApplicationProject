@@ -3,7 +3,10 @@ package com.payment.jdp.PaymentService.controller;
 import com.payment.jdp.PaymentService.service.PaymentService;
 import com.razorpay.Order;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,11 +29,8 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    // ✅ Create Razorpay order
     @PostMapping("/create-order")
-    public Map<String, Object> createOrder(@RequestParam("amount") int amount,
-                                           @RequestParam(value = "currency", defaultValue = "INR") String currency,
-                                           @RequestParam(value = "receipt", defaultValue = "txn_123456") String receipt) {
+    public Map<String, Object> createOrder(@RequestParam("amount") int amount, @RequestParam(value = "currency", defaultValue = "INR") String currency, @RequestParam(value = "receipt", defaultValue = "txn_123456") String receipt) {
         Map<String, Object> response = new HashMap<>();
         try {
             log.info("🔵 Creating order | amount: {}, currency: {}, receipt: {}", amount, currency, receipt);
@@ -38,7 +38,6 @@ public class PaymentController {
             Order order = paymentService.createOrder(amount, currency, receipt);
 
             log.info("🟢 Order created successfully | orderId: {}", Optional.ofNullable(order.get("id")));
-
             response.put("status", "success");
             response.put("orderId", order.get("id"));
             response.put("currency", order.get("currency"));
@@ -51,15 +50,10 @@ public class PaymentController {
         return response;
     }
 
-    // ✅ Verify Razorpay payment
     @PostMapping("/verify")
-    public Map<String, Object> verifyPayment(@RequestParam("orderId") String orderId,
-                                             @RequestParam("paymentId") String paymentId,
-                                             @RequestParam("signature") String signature) {
+    public Map<String, Object> verifyPayment(@RequestParam("orderId") String orderId, @RequestParam("paymentId") String paymentId, @RequestParam("signature") String signature) {
         Map<String, Object> response = new HashMap<>();
-
         log.info("🔵 Verifying payment | orderId: {}, paymentId: {}", orderId, paymentId);
-
         boolean isValid = paymentService.verifyPayment(orderId, paymentId, signature);
 
         if (isValid) {

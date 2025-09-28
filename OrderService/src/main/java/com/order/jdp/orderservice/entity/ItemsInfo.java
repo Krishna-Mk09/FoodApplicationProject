@@ -1,7 +1,9 @@
 package com.order.jdp.orderservice.entity;
 
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,15 +22,14 @@ import lombok.NoArgsConstructor;
 public class ItemsInfo {
 
     @Id
-    @Column(name = "item_id")
-    private Long itemId;
+    @Column(name = "id")
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "restaurant_id", nullable = false)
-    private RestaurantInfo restaurant;
+    @Column(name = "restaurant_id")
+    private Long restaurantId;
 
-    @Column(name = "item_name")
-    private String itemName;
+    @Column(name = "name")
+    private String name;
 
     @Column(name = "price")
     private Double price;
@@ -42,15 +43,16 @@ public class ItemsInfo {
     @Column(name = "category")
     private String category;
 
-    @Column(name = "availability")
-    private Boolean availability;
-
-    @Column(name = "item_image")
-    private String itemImage;
-
-    @Column(name = "event_type")
-    private String eventType;
+    @Column(name = "image_url")
+    private String ImageUrl;
 
     @Column(name = "timestamp")
     private String timestamp;
+
+    @Column(name = "isVeg")
+    private Boolean isVeg;
+
+    @Column(name = "isAvailable")
+    private Boolean isAvailable;
+
 }

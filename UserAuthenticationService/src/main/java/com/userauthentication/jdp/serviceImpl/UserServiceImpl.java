@@ -2,15 +2,10 @@ package com.userauthentication.jdp.serviceImpl;
 
 import com.foodapplication.jdp.Common_Service.Entity.UserDTO;
 import com.foodapplication.jdp.Common_Service.Service.SequenceService;
-import com.userauthentication.jdp.beans.GoogleUserInfo;
-import com.userauthentication.jdp.beans.OTP;
-import com.userauthentication.jdp.beans.UserMapper;
-import com.userauthentication.jdp.beans.UserUpdate;
+import com.userauthentication.jdp.beans.*;
 import com.userauthentication.jdp.config.SecurityConfig;
-import com.userauthentication.jdp.beans.EmailRequest;
 import com.userauthentication.jdp.entity.User;
 import com.userauthentication.jdp.repository.UserRepository;
-import com.userauthentication.jdp.service.EmailClient;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -126,7 +121,7 @@ public class UserServiceImpl implements UserService {
                 emailRequest.setTemplateName("login-detect");
                 emailRequest.setUserName(user.getUserName());
                 emailRequest.setSubject("Login Acknowledgement");
-               kafkaTemplate.send(TOPIC, emailRequest.getSenderEmail(), emailRequest);
+                kafkaTemplate.send(TOPIC, emailRequest.getSenderEmail(), emailRequest);
             }
         } catch (Exception e) {
             log.error("Exception occurred while logging in{}", ExceptionUtils.getStackTrace(e));
@@ -218,15 +213,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    @Transactional
-    @Modifying
-    public void updateUserPassword(long userId, String newPassword) {
-        if (userId == 0L || newPassword == null)
-            throw new IllegalArgumentException("User Id and new password must not be null");
-        userRepository.updateUserPassword(userId, newPassword);
-    }
-
     public UserDTO getCurrentUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String email = (principal instanceof UserDetails) ? ((UserDetails) principal).getUsername() : principal.toString();
@@ -234,34 +220,24 @@ public class UserServiceImpl implements UserService {
         return userMapper.toDTO(user);
     }
 
-    @Override
-    @Transactional
-    public void updateUserRole(long userId, String role) {
-        userRepository.updateUserRole(userId, role);
-    }
-
-    @Override
-    public void updateUser(User user) {
-    }
 
     @Override
     @Transactional
     public void updateUser(String email, UserUpdate bean) {
-        try{
-
-        Optional<User> userOptional = userRepository.findByEmail(email);
-        User user = userOptional.get();
-        user.setSecondaryEmail(bean.getUserBusinessEmail());
-        user.setAadhaarNumber(bean.getAadhaarNumber());
-        user.setLicenseNumber(bean.getLicenseNumber());
-        user.setPanNumber(bean.getPanNumber());
-        user.setRestaurantPhoto(bean.getRestaurantPhoto());
-        user.setRole("OWNER");
-        user.setNameAsInLicense(bean.getNameAsInLicense());
-        user.setUserName(bean.getUserName());
-        user.setGstNumber(bean.getGstNumber());
-        userRepository.save(user);
-        }catch (Exception e){
+        try {
+            Optional<User> userOptional = userRepository.findByEmail(email);
+            User user = userOptional.get();
+            user.setSecondaryEmail(bean.getUserBusinessEmail());
+            user.setAadhaarNumber(bean.getAadhaarNumber());
+            user.setLicenseNumber(bean.getLicenseNumber());
+            user.setPanNumber(bean.getPanNumber());
+            user.setRestaurantPhoto(bean.getRestaurantPhoto());
+            user.setRole("OWNER");
+            user.setNameAsInLicense(bean.getNameAsInLicense());
+            user.setUserName(bean.getUserName());
+            user.setGstNumber(bean.getGstNumber());
+            userRepository.save(user);
+        } catch (Exception e) {
             log.error("Exception occurred while updating user details{}", ExceptionUtils.getStackTrace(e));
             throw e;
         }
@@ -272,7 +248,7 @@ public class UserServiceImpl implements UserService {
         return "https://accounts.google.com/o/oauth2/v2/auth" + "?client_id=" + clientId + "&redirect_uri=" + redirectUri + "&response_type=code" + "&scope=openid%20email%20profile";
     }
 
-    public String handleGoogleLogin(   GoogleUserInfo profile ) {
+    public String handleGoogleLogin(GoogleUserInfo profile) {
         try {
             User user = userRepository.findByEmail(profile.getEmail()).orElseGet(() -> userRepository.save(new User(profile.getEmail(), profile.getName(), profile.getPicture().getBytes())));
             return SECURITY_TOKEN_GENERATOR.generateToken(user);

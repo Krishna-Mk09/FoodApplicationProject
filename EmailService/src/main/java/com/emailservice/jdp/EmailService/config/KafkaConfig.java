@@ -25,14 +25,9 @@ public class KafkaConfig {
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "emailService");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
-
-        // Configure delegate deserializers
         props.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
         props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class);
-
-        // Trust all packages
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
-        // Force to ignore type headers and always use EmailRequest
         props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, "com.emailservice.jdp.EmailService.entity.EmailRequest");
         props.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
 
@@ -41,8 +36,7 @@ public class KafkaConfig {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, EmailRequest> kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, EmailRequest> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<String, EmailRequest> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }

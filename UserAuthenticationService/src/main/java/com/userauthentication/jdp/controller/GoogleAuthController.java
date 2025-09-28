@@ -28,10 +28,9 @@ import java.util.Map;
 @RequestMapping("/google")
 public class GoogleAuthController {
 
+    private static final String TOPIC = "email";
     private final UserServiceImpl userService;
     private final KafkaTemplate<String, EmailRequest> kafkaTemplate;
-    private static final String TOPIC = "email";
-
 
     @GetMapping("/login")
     public void redirectToGoogle(HttpServletResponse response) throws IOException {
@@ -44,7 +43,7 @@ public class GoogleAuthController {
     @GetMapping("/callback")
     public ResponseEntity<?> googleCallback(@RequestParam("code") String code) {
         log.info("Google callback hit with code: {}", code);
-        Map<String, String> tokenResponse =userService.exchangeCodeForToken(code);
+        Map<String, String> tokenResponse = userService.exchangeCodeForToken(code);
         GoogleUserInfo profile = userService.fetchUserProfile(tokenResponse.get("access_token"));
         String jwtToken = userService.handleGoogleLogin(profile);
         EmailRequest emailRequest = new EmailRequest();
@@ -52,7 +51,7 @@ public class GoogleAuthController {
         emailRequest.setSubject("Registration Acknowledgement");
         emailRequest.setTemplateName("welcome-email");
         emailRequest.setUserName(profile.getName());
-        kafkaTemplate.send(TOPIC,profile.getEmail() , emailRequest);
+        kafkaTemplate.send(TOPIC, profile.getEmail(), emailRequest);
         return ResponseEntity.ok(Map.of("jwtToken", jwtToken));
     }
 }

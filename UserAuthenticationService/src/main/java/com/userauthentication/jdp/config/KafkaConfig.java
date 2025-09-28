@@ -23,15 +23,16 @@ import java.util.Map;
 @EnableKafka
 @Configuration
 public class KafkaConfig {
+    Map<String, Object> configProps = new HashMap<>();
 
     @Bean
     public NewTopic menuItemsTopic() {
-        return new NewTopic("email", 3, (short) 1); // partitions=3, replication=1
+        return new NewTopic("email", 3, (short) 1);
     }
+
 
     @Bean
     public ProducerFactory<String, EmailRequest> producerFactory() {
-        Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
@@ -43,6 +44,7 @@ public class KafkaConfig {
         return new KafkaTemplate<>(producerFactory());
     }
 
+
     @Bean
     public ConsumerFactory<String, EmailRequest> consumerFactory() {
         JsonDeserializer<EmailRequest> deserializer = new JsonDeserializer<>(EmailRequest.class);
@@ -53,7 +55,6 @@ public class KafkaConfig {
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG, "emailService");
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, org.apache.kafka.common.serialization.StringDeserializer.class);
         props.put(org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
-
         return new DefaultKafkaConsumerFactory<>(props, new org.apache.kafka.common.serialization.StringDeserializer(), deserializer);
     }
 

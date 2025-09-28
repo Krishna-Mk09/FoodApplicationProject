@@ -5,7 +5,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -36,7 +35,7 @@ public class EmailServiceImpl implements EmailService {
             templateModel.put("IP", request.getIpaddress());
             templateModel.put("Device", request.getDevice());
             templateModel.put("DateAndTime", java.time.LocalDateTime.now().toString());
-            templateModel.put("OTP", request.getOtp()==null? "":request.getOtp());
+            templateModel.put("OTP", request.getOtp() == null ? "" : request.getOtp());
             request.setTemplateModel(templateModel);
             context.setVariables(request.getTemplateModel());
             String htmlContent = templateEngine.process(request.getTemplateName(), context);
