@@ -1,7 +1,6 @@
 package com.order.jdp.orderservice.repository;
 
 
-
 import com.order.jdp.orderservice.entity.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

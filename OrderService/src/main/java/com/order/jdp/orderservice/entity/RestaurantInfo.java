@@ -7,6 +7,7 @@ package com.order.jdp.orderservice.entity;
  * Created With: IntelliJ IDEA Ultimate Edition
  */
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -22,20 +23,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RestaurantInfo {
 
     @Id
     @Column(name = "restaurant_id")
     private Long restaurantId;
 
-    @Column(name = "restaurant_name", nullable = false)
-    private String restaurantName;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name = "restaurant_address")
-    private String restaurantAddress;
+    @Column(name = "address")
+    private String address;
 
-    @Column(name = "restaurant_email")
-    private String restaurantEmail;
+    @Column(name = "email")
+    private String email;
 
     @Column(name = "image")
     private String image;
@@ -50,7 +52,7 @@ public class RestaurantInfo {
     private String state;
 
     @Column(name = "restaurant_type")
-    private String restaurantType;
+    private String cuisineType;
 
     @Column(name = "opening_time")
     private String openingTime;
@@ -66,9 +68,5 @@ public class RestaurantInfo {
 
     @Column(name = "payment_methods")
     private String paymentMethods;
-
-//    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<ItemsInfo> menuItems;
-
 
 }

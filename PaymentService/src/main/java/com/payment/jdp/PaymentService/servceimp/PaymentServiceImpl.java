@@ -19,9 +19,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final String keyId;
     private final String keySecret;
 
-    public PaymentServiceImpl(
-            @Value("${razorpay.key.id}") String keyId,
-            @Value("${razorpay.key.secret}") String keySecret) throws Exception {
+    public PaymentServiceImpl(@Value("${razorpay.key.id}") String keyId, @Value("${razorpay.key.secret}") String keySecret) throws Exception {
         this.razorpayClient = new RazorpayClient(keyId, keySecret);
         this.keyId = keyId;
         this.keySecret = keySecret;

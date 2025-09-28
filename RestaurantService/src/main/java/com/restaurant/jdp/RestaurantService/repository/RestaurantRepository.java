@@ -10,6 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
     Restaurant findByEmail(String email);
     Page<Restaurant> findAll(Pageable pageable);
-
     Restaurant findByUserId(Long userId);
 }

@@ -23,6 +23,7 @@ public interface RestaurantService {
 
     Restaurant findByEmail(String email);
 
+    Restaurant findRestaurantByUserId(long userId);
 
 
 }

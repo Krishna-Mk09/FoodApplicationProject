@@ -22,7 +22,6 @@ import java.util.List;
 public class RestaurantController {
     private final RestaurantService restaurantService;
 
-
     public RestaurantController(RestaurantService restaurantService) {
         this.restaurantService = restaurantService;
     }
@@ -52,11 +51,11 @@ public class RestaurantController {
     @PreAuthorize("hasRole('OWNER')")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "success")})
     @PostMapping("/update-restaurant")
-    public  ResponseEntity<String>  updateRestaurant( @RequestBody Restaurant restaurant, @RequestHeader("Authorization") String authHeader) throws Exception {
+    public ResponseEntity<String> updateRestaurant(@RequestBody Restaurant restaurant, @RequestHeader("Authorization") String authHeader) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
         try {
             String value = restaurantService.updateRestaurant(restaurant, authHeader);
-            return new ResponseEntity<>(value , HttpStatus.CREATED);
+            return new ResponseEntity<>(value, HttpStatus.CREATED);
         } catch (Exception e) {
             log.error("Exception occurred while updating restaurant: {}", e.getMessage());
             throw new Exception(e.getMessage());

@@ -22,16 +22,6 @@ public interface UserService {
     void deleteByUserId(long userId) throws Exception;
 
     @Transactional
-    @Modifying
-    void updateUserPassword(long userId, String newPassword);
-
-    @Transactional
-    void updateUserRole(long userId, String role);
-
-    @Transactional
-    void updateUser(User user);
-
-    @Transactional
     void updateUser(String email, UserUpdate bean);
 
     UserDTO getCurrentUser() throws Exception;
