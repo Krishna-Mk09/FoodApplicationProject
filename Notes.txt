@@ -46,3 +46,12 @@ spring.security.user.password=food
  ======> security enable  <===========
  eureka.client.service-url.defaultZone=http://user:pwd@localhost:8761/eureka/
 --------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
