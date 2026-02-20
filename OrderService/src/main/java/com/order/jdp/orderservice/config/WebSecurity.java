@@ -21,7 +21,7 @@ public class WebSecurity {
                 ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless API
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())) // Enable JWT authentication
                 ).exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint()) // Return 401 Unauthorized
-                        .accessDeniedHandler(new BearerTokenAccessDeniedHandler()) // Return 403 Forbidden
+                        .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
                 );
 
         return http.build();

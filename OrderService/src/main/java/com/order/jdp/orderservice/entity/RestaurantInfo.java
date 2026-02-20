@@ -70,3 +70,5 @@ public class RestaurantInfo {
     private String paymentMethods;
 
 }
+
+
