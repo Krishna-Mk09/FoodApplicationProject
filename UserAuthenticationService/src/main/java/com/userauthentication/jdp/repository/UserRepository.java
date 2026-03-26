@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 /*
  * Author Name : M.V.Krishna
  * Date: 27-02-2025
@@ -17,17 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByUserName(String userName);
-
-    User findByEmail(String email);
-
-    User findByPhoneNum(String phoneNum);
-
-    User findByUserNameAndPassword(String userName, String password);
-
-    User findByEmailAndPassword(String email, String password);
-
-    String deleteByUserId(Long userId);
-
+    Optional<User> findByEmail(String email);
+    void deleteByUserId(long userId);
     boolean existsByEmailOrPhoneNum(String email, String phoneNum);
 
     @Transactional
@@ -38,5 +31,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Transactional
     @Modifying
     @Query("UPDATE User u SET u.role = :role WHERE u.userId = :userId")
-    void updateUserRole(Long userId, String role);
+    void updateUserRole(long userId, String role);
 }

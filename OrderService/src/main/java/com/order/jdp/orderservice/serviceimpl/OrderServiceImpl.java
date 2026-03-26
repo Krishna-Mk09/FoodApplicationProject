@@ -8,25 +8,22 @@ import com.order.jdp.orderservice.entity.OrderItems;
 import com.order.jdp.orderservice.repository.OrderItemsRepository;
 import com.order.jdp.orderservice.repository.OrderRepository;
 import com.order.jdp.orderservice.service.OrderService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
 
-    @Autowired
-    private OrderItemsRepository orderItemsRepository;
+    private final OrderItemsRepository orderItemsRepository;
 
-    @Autowired
-    SequenceService sequenceService;
-
+    private final SequenceService sequenceService;
 
     @Override
     public List<OrderDTO> getAllOrders(long userId) {
@@ -38,7 +35,6 @@ public class OrderServiceImpl implements OrderService {
                 return orders.stream().map(order -> {
                     OrderDTO orderDTO = new OrderDTO();
                     orderDTO.setOrderId(order.getOrderId());
-//                  orderDTO.setOrderDate(order.getOrderDate()); // add column in Order table
                     orderDTO.setOrderStatus(order.getOrderStatus());
                     orderDTO.setOrderTotalAmount(order.getOrderTotalAmount());
                     orderDTO.setUserId(order.getUserId());
@@ -113,23 +109,6 @@ public class OrderServiceImpl implements OrderService {
         }
         return orderItemsDTO;
     }
-
-
-    @Override
-    public void getOrderByRestaurant() {
-        // TODO document why this method is empty
-    }
-
-    @Override
-    public void getOrderByUser() {
-        // TODO document why this method is empty
-    }
-
-    @Override
-    public void getOrderByStatus() {
-        // TODO document why this method is empty
-    }
-
 
 
 }

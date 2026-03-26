@@ -19,11 +19,11 @@ public class Order {
 
     @Id
     @Column(name = "ORDER_ID")
-    private long orderId; //  pk
+    private long orderId;
     @Column(name = "USER_ID")
-    private long userId;  // fk
+    private long userId;
     @Column(name = "ADDRESS_ID")
-    private long addressId; //fk
+    private long addressId;
     @Column(name = "RESTAURANT_ID")
     private long noOfItems;
     @Column(name = "ORDER_BUY_DATE")
@@ -37,17 +37,14 @@ public class Order {
     @Column(name = "ORDER_TOTAL_AMOUNT")
     private long orderTotalAmount;
     @Column(name = "ORDER_PAYMENT_ID")
-    private long orderPaymentId; // fk
+    private long orderPaymentId;
     @Column(name = "ORDER_DELIVERY_ID")
-    private long orderDeliveryId; // fk
+    private long orderDeliveryId;
     @Column(name = "ORDER_RATING")
     private long orderRating;
-
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<OrderItems> orderItems;
-
-
-
+    
 }

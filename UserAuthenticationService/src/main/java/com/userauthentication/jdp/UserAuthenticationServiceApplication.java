@@ -8,13 +8,12 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 
-@SpringBootApplication(scanBasePackages = {"com.userauthentication.jdp", "com.foodapplication.jdp.Common_Service"})
-@EntityScan(basePackages = {"com.userauthentication.jdp.entity", "com.foodapplication.jdp.Common_Service.Entity"})
-@EnableJpaRepositories(basePackages = {"com.userauthentication.jdp.repository", "com.foodapplication.jdp.Common_Service.repository"})
+@SpringBootApplication(scanBasePackages = "com")
+@EntityScan(basePackages = "com")
+@EnableJpaRepositories(basePackages = "com")
 @EnableFeignClients
 @EnableDiscoveryClient
 public class UserAuthenticationServiceApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(UserAuthenticationServiceApplication.class, args);
     }

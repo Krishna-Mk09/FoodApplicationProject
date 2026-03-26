@@ -1,0 +1,184 @@
+services:
+  # Database and Kafka stack remain the same
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Krishna@81433*
+      MYSQL_DATABASE: Food_Application_Platform
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - zomaato
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.9.1
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - zomaato
+
+  kafka:
+    image: confluentinc/cp-kafka:7.9.1
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "9092:9092"
+    networks:
+      - zomaato
+
+  kafka-connect:
+    image: debezium/connect:2.5
+    container_name: kafka-connect
+    depends_on:
+      - kafka
+      - mysql
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: my_connect_configs
+      OFFSET_STORAGE_TOPIC: my_connect_offsets
+      STATUS_STORAGE_TOPIC: my_connect_statuses
+      KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      INTERNAL_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      INTERNAL_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      REST_ADVERTISED_HOST_NAME: kafka-connect
+    volumes:
+      - ./scripts/register-mysql-connector.json:/scripts/register-mysql-connector.json:ro
+      - ./scripts/res.sh:/scripts/res.sh:ro
+    networks:
+      - zomaato
+
+  # Microservices (Custom images now have build paths)
+  eureka-service:
+    build:
+      context: ./EurekaService
+    container_name: eureka
+    ports:
+      - "8761:8761"
+    networks:
+      - zomaato
+
+  api-gateway:
+    build:
+      context: ./ApiGatewayService
+    container_name: api-gateway
+    depends_on:
+      - eureka-service
+    ports:
+      - "9000:9000"
+    networks:
+      - zomaato
+
+  email-service:
+    build:
+      context: ./EmailService
+    container_name: email
+    depends_on:
+      - eureka-service
+    ports:
+      - "8085:8085"
+    networks:
+      - zomaato
+
+  user-authentication-service:
+    build:
+      context: ./UserAuthenticationService
+    container_name: user-auth
+    depends_on:
+      - eureka-service
+      - mysql
+      - kafka
+    ports:
+      - "8086:8086"
+    networks:
+      - zomaato
+
+  restaurant-service:
+    build:
+      context: ./RestaurantService
+    container_name: restaurant
+    depends_on:
+      - eureka-service
+      - mysql
+      - kafka
+    ports:
+      - "8081:8081"
+    networks:
+      - zomaato
+
+  order-service:
+    build:
+      context: ./OrderService
+    container_name: order
+    depends_on:
+      - eureka-service
+      - kafka
+      - mysql
+    ports:
+      - "8082:8082"
+    networks:
+      - zomaato
+
+  payment-service:
+    build:
+      context: ./PaymentService
+    container_name: payment
+    depends_on:
+      - eureka-service
+      - kafka
+      - mysql
+    ports:
+      - "8084:8084"
+    networks:
+      - zomaato
+
+  delivery-service:
+    build:
+      context: ./DeliveryService
+    container_name: delivery
+    depends_on:
+      - eureka-service
+      - kafka
+      - mysql
+    ports:
+      - "8181:8181"
+    networks:
+      - zomaato
+
+  notification-service:
+    build:
+      context: ./NotificationService
+    container_name: notification
+    depends_on:
+      - eureka-service
+      - kafka
+      - mysql
+    ports:
+      - "8282:8282"
+    networks:
+      - zomaato
+
+volumes:
+  mysql-data:
+
+networks:
+  zomaato:

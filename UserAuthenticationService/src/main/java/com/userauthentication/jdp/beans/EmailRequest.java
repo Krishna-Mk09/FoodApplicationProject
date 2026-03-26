@@ -1,5 +1,6 @@
-package com.userauthentication.jdp.entity;
+package com.userauthentication.jdp.beans;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -21,8 +22,7 @@ public class EmailRequest {
     private String userName;
     private String ipaddress;
     private String device;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dateAndTime;
-
     private String otp;
-
 }

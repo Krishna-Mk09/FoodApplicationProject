@@ -1,15 +1,16 @@
 package com.userauthentication.jdp.controller;
 
+import com.foodapplication.jdp.Common_Service.Entity.UserDTO;
+import com.userauthentication.jdp.beans.UserUpdate;
 import com.userauthentication.jdp.entity.User;
 import com.userauthentication.jdp.serviceImpl.UserServiceImpl;
-
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,27 +22,29 @@ import org.springframework.web.bind.annotation.*;
  */
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/userAuthService")
 public class UserController {
     private final UserServiceImpl userService;
 
-    @Autowired
-    public UserController(UserServiceImpl userService) {
-        this.userService = userService;
+    @GetMapping("/userInfo")
+    public ResponseEntity<UserDTO> getCurrentUser() {
+        try {
+            UserDTO currentUser = userService.getCurrentUser();
+            return new ResponseEntity<>(currentUser, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(" Exception occurred while getting in {}", ExceptionUtils.getStackTrace(e));
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-
-    //@ApiOperation(value = "Saves users in to the database  ", notes = "Saves users in to the database  ")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "success")})
     @PostMapping("/registerUser")
     public ResponseEntity<String> registerUser(@Valid @RequestBody User user) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
         try {
-            log.info("User Controller.registerUser: user: {}");
+            log.info("User Controller.registerUser: userId {} userName{}", user.getUserId(), user.getUserName());
             String savedUser = this.userService.saveUser(user);
-
-
-            log.info("User successfully saved with ID = {}");
             return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
         } catch (Exception e) {
             log.error(" Exception occurred while saving user details {} ", ExceptionUtils.getStackTrace(e));
@@ -49,47 +52,66 @@ public class UserController {
         }
     }
 
-
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@Valid @RequestBody User users,HttpServletRequest request) throws Exception {
+    public ResponseEntity<?> loginUser(@Valid @RequestBody User users, HttpServletRequest request) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
         try {
-            log.info("User Controller.login: user: ");
-            String token = this.userService.loginUser(users.getEmail(), users.getPassword(),request);
-            log.info("User logged inn: user: ");
+            String token = this.userService.loginUser(users.getEmail(), users.getPassword(), request);
             return new ResponseEntity<>(token, HttpStatus.OK);
         } catch (Exception e) {
-            log.error(" Exception occurred while user log in ", ExceptionUtils.getStackTrace(e));
+            log.error(" Exception occurred   while user log in {}", ExceptionUtils.getStackTrace(e));
             throw new Exception(e.getMessage());
         }
     }
-
-
 
     @PostMapping("/send-otp/{email}")
-    public ResponseEntity<?> sendOtp(@Valid @PathVariable("email") String email,HttpServletRequest request) throws Exception {
+    public ResponseEntity<?> sendOtp(@Valid @PathVariable("email") String email, HttpServletRequest request) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
         try {
             log.info("User Controller.login: user: ");
-            String token = this.userService.sendOtp(email,request);
+            String token = this.userService.sendOtp(email, request);
             log.info("User logged inn: user: ");
             return new ResponseEntity<>(token, HttpStatus.OK);
         } catch (Exception e) {
-            log.error(" Exception occurred while user log in ", ExceptionUtils.getStackTrace(e));
+            log.error(" Exception   occurred while user log in {}", ExceptionUtils.getStackTrace(e));
             throw new Exception(e.getMessage());
         }
     }
 
+    @PostMapping("/verify-otp/{email}/{otp}")
+    public ResponseEntity<String> verifyOtp(@Valid @PathVariable("email") String email, @PathVariable("otp") int otp) throws Exception {
+        log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
+        try {
+            String str = this.userService.verifyOtp(email, otp);
+            return new ResponseEntity<>(str, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(" Exception occurred while user log in {}", ExceptionUtils.getStackTrace(e));
+            throw new Exception(e.getMessage());
+        }
+    }
 
     @DeleteMapping("/deleteUser/{userId}")
     public ResponseEntity<String> deleteUser(@Valid @PathVariable long userId) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
         try {
-            log.info("User Controller.login: user: ");
-            String str = this.userService.deleteByUserId(userId);
-            return new ResponseEntity<>(str, HttpStatus.OK);
+            this.userService.deleteByUserId(userId);
+            return new ResponseEntity<>("User deleted Successfully", HttpStatus.OK);
         } catch (Exception e) {
-            log.error(" Exception occurred while user log in ", ExceptionUtils.getStackTrace(e));
+            log.error(" Exception occurred while  user log in{} ", ExceptionUtils.getStackTrace(e));
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @PostMapping("/becomeOwner")
+    public ResponseEntity<String> becomeOwner(@Valid @RequestBody UserUpdate bean) throws Exception {
+        log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
+        try {
+            UserDTO currentUser = userService.getCurrentUser();
+            userService.updateUser(currentUser.getEmail(), bean);
+            log.info("User Controller.login: user : ");
+            return new ResponseEntity<>("User Updated Successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(" Exception occurred  while user log in {}", ExceptionUtils.getStackTrace(e));
             throw new Exception(e.getMessage());
         }
     }

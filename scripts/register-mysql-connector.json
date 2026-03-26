@@ -1,0 +1,22 @@
+{
+  "name": "mysql-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "tasks.max": "1",
+    "database.hostname": "mysql",
+    "database.port": "3306",
+    "database.user": "debezium",
+    "database.password": "dbzpass",
+    "database.server.id": "184054",
+    "snapshot.mode": "initial",
+    "database.server.name": "foodapp",
+    "topic.prefix": "foodapp",
+    "database.include.list": "Food_Application_Platform",
+    "table.include.list": "Food_Application_Platform.restaurants,Food_Application_Platform.menu,Food_Application_Platform.test",
+    "schema.history.internal.kafka.bootstrap.servers": "kafka:9092",
+    "schema.history.internal.kafka.topic": "schema_changes_foodapp_v2",
+    "include.schema.changes": "true",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter"
+  }
+}
