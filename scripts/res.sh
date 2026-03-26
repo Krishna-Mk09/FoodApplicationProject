@@ -1,20 +1,39 @@
 #!/bin/bash
-echo "⏳ Waiting for Kafka Connect to start..."
 
-# Wait until Kafka Connect REST API is up
-until curl -s http://kafka-connect:8083/ >/dev/null 2>&1; do
-    echo "Waiting for Kafka Connect..."
-    sleep 5
+echo "⏳ Waiting for Kafka Connect..."
+
+# Wait for Kafka Connect REST API
+until curl -s http://kafka-connect:8083/ >/dev/null; do
+  echo "Waiting for Kafka Connect..."
+  sleep 5
 done
 
-echo "📡 Kafka Connect is up, registering MySQL Debezium connector..."
+echo "⏳ Waiting for Kafka to be ready..."
 
-# Register the connector
-curl -X POST -H "Content-Type: application/json" \
-     --data @/scripts/register-mysql-connector.json \
-     http://kafka-connect:8083/connectors
+# OPTIONAL: Instead of nc, just wait a bit (Kafka is already dependency)
+sleep 10
 
-echo "✅ MySQL Debezium Connector registered successfully!"
+echo "📡 Checking if connector already exists..."
 
-# Keep container alive
-tail -f /dev/null
+# Check if connector exists
+if curl -s http://kafka-connect:8083/connectors/mysql-connector | grep -q "mysql-connector"; then
+  echo "⚠️ Connector already exists. Deleting..."
+  curl -X DELETE http://kafka-connect:8083/connectors/mysql-connector
+  sleep 5
+fi
+
+echo "🚀 Registering MySQL Debezium connector..."
+
+response=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+  -H "Content-Type: application/json" \
+  --data @/scripts/register-mysql-connector.json \
+  http://kafka-connect:8083/connectors)
+
+if [ "$response" = "201" ]; then
+  echo "✅ Connector registered successfully!"
+else
+  echo "❌ Failed to register connector. HTTP status: $response"
+  exit 1
+fi
+
+echo "🎉 Done!"
