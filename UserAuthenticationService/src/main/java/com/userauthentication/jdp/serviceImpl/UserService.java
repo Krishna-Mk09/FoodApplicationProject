@@ -1,22 +1,29 @@
 package com.userauthentication.jdp.serviceImpl;
 
+import com.foodapplication.jdp.Common_Service.Entity.UserDTO;
+import com.userauthentication.jdp.beans.UserUpdate;
 import com.userauthentication.jdp.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface UserService {
 
     String saveUser(User user) throws Exception;
 
-    User updateUser(User user, Long userId);
-
     String loginUser(String email, String password, HttpServletRequest request) throws Exception;
 
     String sendOtp(String email, HttpServletRequest request) throws Exception;
 
-    String deleteByUserId(Long userId) throws Exception;
+    String verifyOtp(String email, int otp) throws Exception;
 
-    void updateUserPassword(Long userId, String password);
+    @Transactional
+    @Modifying
+    void deleteByUserId(long userId) throws Exception;
 
-    void updateUserRole(Long userId, String role);
+    @Transactional
+    void updateUser(String email, UserUpdate bean);
+
+    UserDTO getCurrentUser() throws Exception;
 
 }

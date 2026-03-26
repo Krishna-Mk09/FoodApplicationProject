@@ -14,20 +14,12 @@ import java.util.Date;
 @Service
 @Slf4j
 public class SecurityTokenGeneratorImpl implements SecurityTokenGenerator {
-
-
-    private static final String SECRET = "f5cvF5VLHWBYtzfS2pyWJdN4jZ62bWZ/tnbusFEzdGk=";
-    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET));  // Use consistent key
-
-    private static final long EXPIRATION_TIME = 900000; // 15 minutes
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60;
+    private static final String secretKey = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
 
     @Override
     public String generateToken(User user) {
-        return Jwts.builder()
-                .setSubject(user.getEmail())
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-                .signWith(SECRET_KEY, SignatureAlgorithm.HS256)
-                .compact();
+        return Jwts.builder().setSubject(user.getEmail()).setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)).claim("role", user.getRole()).claim("isActive", user.getIsActive()).claim("username", user.getUserName()).signWith(SECRET_KEY, SignatureAlgorithm.HS256).compact();
     }
 }

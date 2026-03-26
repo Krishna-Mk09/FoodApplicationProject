@@ -1,6 +1,7 @@
 package com.foodapplication.jdp.Common_Service.ServiceImpl;
 
 import com.foodapplication.jdp.Common_Service.Entity.Sequence;
+import com.foodapplication.jdp.Common_Service.Entity.UserDTO;
 import com.foodapplication.jdp.Common_Service.Service.SequenceService;
 import com.foodapplication.jdp.Common_Service.repository.SequenceRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,13 +24,27 @@ import java.util.List;
 @Service
 public class SequenceServiceImpl implements SequenceService {
 
+    private final SequenceRepository sequenceRepository;
+    private final WebClient.Builder webClientBuilder;
+
+
     @Autowired
-    private SequenceRepository sequenceRepository;
+    public SequenceServiceImpl(SequenceRepository sequenceRepository, WebClient.Builder webClientBuilder) {
+        this.sequenceRepository = sequenceRepository;
+        this.webClientBuilder = webClientBuilder;
+    }
+
+
+    public UserDTO getCurrentUser(String authHeader) {
+        String finalHeader = authHeader.startsWith("Bearer ") ? authHeader : "Bearer " + authHeader;
+        return webClientBuilder.baseUrl("http://USER-AUTHENTICATION-SERVICE") // Eureka service name
+                .build().get().uri("/userAuthService/userInfo").header("Authorization", finalHeader).retrieve().bodyToMono(UserDTO.class).block();
+    }
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
-    public long getSequenceByCustomer(String tableName) throws Exception {
+    public long getSequenceByCustomer(String tableName) {
         log.info("trying to generate sequence id value from repository");
         BigDecimal sequence = BigDecimal.ZERO;
         long newSequence;
@@ -40,34 +56,20 @@ public class SequenceServiceImpl implements SequenceService {
         BigDecimal cycle = BigDecimal.ZERO;
         synchronized (this) {
             List<Sequence> ajSequenceList = sequenceRepository.findByTableName(tableName.toUpperCase());
-
-
             if (ajSequenceList != null && !ajSequenceList.isEmpty()) {
-
                 ajSequence = ajSequenceList.get(0);
                 incrementValue = ajSequence.getSeqIncrementVal();
                 currentValue = ajSequence.getSeqCurrVal();
                 maxValue = (ajSequence.getSeqMaxVal() != null ? ajSequence.getSeqMaxVal() : BigDecimal.valueOf(-1));
-
                 cycle = ajSequence.getSeqCycle();
-
             }
-
-            // increment the current value with the incremental value
             sequence = currentValue.add(incrementValue);
-
-            // if the value is more than the maxValue of the sequence, restarting from start
             if (!(maxValue.compareTo(BigDecimal.valueOf(-1)) == 0) && sequence.compareTo(maxValue) > 0 && cycle.compareTo(BigDecimal.ONE) == 0) {
-                // log.info("value is more than the maxValue - restarting from start");
                 currentValue = currentValue.add(incrementValue);
                 sequence = currentValue;
             }
-
             sequenceId = sequenceId + sequence.toPlainString();
             newSequence = new BigDecimal(sequenceId).longValue();
-
-
-            // Updates AjSequence table with new sequence generated.
             if (ajSequence != null) {
                 ajSequence.setSeqCurrVal(sequence);
                 sequenceRepository.save(ajSequence);
