@@ -1,0 +1,66 @@
+.app-footer {
+    background-color: #f8f8f8;
+    padding: 50px 0 20px;
+    margin-top: 60px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer-brand h2 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1c1c1c;
+    margin-bottom: 40px;
+    letter-spacing: -1px;
+}
+
+.footer-links {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.link-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.link-column h3 {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    color: #000;
+}
+
+.link-column a {
+    text-decoration: none;
+    color: #696969;
+    font-size: 14px;
+    margin-bottom: 10px;
+    transition: color 0.2s;
+}
+
+.link-column a:hover {
+    color: #1c1c1c;
+}
+
+.footer-divider {
+    border: 0;
+    border-top: 1px solid #e8e8e8;
+    margin: 20px 0;
+}
+
+.footer-bottom {
+    text-align: left;
+    color: #4f4f4f;
+    font-size: 13px;
+    line-height: 1.5;
+}

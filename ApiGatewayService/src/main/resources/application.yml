@@ -1,0 +1,25 @@
+server:
+  port: 9000
+
+spring:
+  application:
+    name: api-gateway-service
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+  security:
+    user:
+      name: food
+      password: food
+
+eureka:
+  client:
+    enableJersey: false
+    registerWithEureka: true
+    fetchRegistry: true
+    enabled: true
+    service-url:
+      defaultZone: http://food:food@eureka:8761/eureka/
