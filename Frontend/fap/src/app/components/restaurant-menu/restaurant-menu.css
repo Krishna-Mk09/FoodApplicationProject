@@ -1,0 +1,244 @@
+.menu-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.restaurant-banner {
+    margin-bottom: 40px;
+}
+
+.banner-image {
+    height: 350px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.banner-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+
+.banner-image:hover img {
+    transform: scale(1.02);
+}
+
+.restaurant-info {
+    padding: 0 10px;
+}
+
+.info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.info-header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1c1c1c;
+}
+
+.rating-badge {
+    background-color: #24963f;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cuisine-tags {
+    color: #696969;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.location-info {
+    color: #828282;
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+.btn-outline {
+    border: 1px solid #9c9c9c;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    color: #1c1c1c;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-outline:hover {
+    background: #f8f8f8;
+}
+
+.menu-container {
+    display: flex;
+    gap: 40px;
+    margin-top: 40px;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 40px;
+}
+
+.menu-sidebar {
+    width: 250px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 100px;
+    align-self: flex-start;
+}
+
+.menu-sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.menu-sidebar li {
+    padding: 15px 0;
+    font-size: 18px;
+    color: #1c1c1c;
+    cursor: pointer;
+    border-right: 3px solid transparent;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.menu-sidebar li:hover,
+.menu-sidebar li.active {
+    color: #e23744;
+}
+
+.menu-sidebar li.active {
+    background: linear-gradient(90deg, transparent 0%, rgba(226, 55, 68, 0.05) 100%);
+    border-right-color: #e23744;
+}
+
+.menu-list {
+    flex: 1;
+}
+
+.menu-list h2 {
+    font-size: 24px;
+    margin-bottom: 30px;
+    color: #1c1c1c;
+    font-weight: 600;
+}
+
+.menu-item {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+    border-bottom: 1px dashed #e8e8e8;
+}
+
+.item-details {
+    flex: 1;
+    padding-right: 30px;
+}
+
+.veg-badge {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #e11b22;
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.veg-badge::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background-color: #e11b22;
+    border-radius: 50%;
+}
+
+.veg-badge:not(.non-veg) {
+    border-color: #0f8a65;
+}
+
+.veg-badge:not(.non-veg)::after {
+    background-color: #0f8a65;
+}
+
+.item-details h3 {
+    font-size: 18px;
+    color: #1c1c1c;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.item-price {
+    font-size: 16px;
+    color: #1c1c1c;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.item-rating {
+    font-size: 13px;
+    color: #f7a900;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.item-rating .votes {
+    color: #828282;
+}
+
+.item-desc {
+    font-size: 14px;
+    color: #696969;
+    line-height: 1.5;
+}
+
+.item-image {
+    width: 156px;
+    height: 156px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.add-btn {
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: white;
+    color: #e23744;
+    border: 1px solid #e23744;
+    padding: 8px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+}
+
+.add-btn:hover {
+    background-color: #f8f8f8;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
