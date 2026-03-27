@@ -6,7 +6,7 @@
     "database.hostname": "mysql",
     "database.port": "3306",
     "database.user": "debezium",
-    "database.password": "dbzpass",
+    "database.password": "dbz",
     "database.server.id": "184054",
     "snapshot.mode": "initial",
     "database.server.name": "foodapp",
