@@ -41,7 +41,7 @@ public class GoogleAuthController {
 
 
     @GetMapping("/callback")
-    public ResponseEntity<?> googleCallback(@RequestParam("code") String code) {
+    public void googleCallback(@RequestParam("code") String code, HttpServletResponse response) throws IOException {
         log.info("Google callback hit with code: {}", code);
         Map<String, String> tokenResponse = userService.exchangeCodeForToken(code);
         GoogleUserInfo profile = userService.fetchUserProfile(tokenResponse.get("access_token"));
@@ -52,6 +52,6 @@ public class GoogleAuthController {
         emailRequest.setTemplateName("welcome-email");
         emailRequest.setUserName(profile.getName());
         kafkaTemplate.send(TOPIC, profile.getEmail(), emailRequest);
-        return ResponseEntity.ok(Map.of("jwtToken", jwtToken));
+        response.sendRedirect("http://localhost:4200/login?token=" + jwtToken);
     }
 }

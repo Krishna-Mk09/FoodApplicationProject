@@ -1,0 +1,47 @@
+<div class="container" [class.active]="isActive">
+  <div class="wrapper">
+
+    <!-- LEFT -->
+    <div class="panel left">
+      <h1>Welcome User 👋</h1>
+      <p>Access your dashboard using secure login options</p>
+
+      <button class="btn white-btn" (click)="loginWithGoogle()">Continue with Google</button>
+      <button class="btn outline-btn" (click)="openOtp()">Login with OTP</button>
+      <button class="btn white-btn" (click)="openPassword()">Sign In →</button>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="panel right">
+      <h1>{{ formTitle }}</h1>
+
+      <div class="form">
+
+        <!-- NAME -->
+        <input type="text" [class.hidden]="!showName" placeholder="Full Name" [(ngModel)]="fullName" name="fullName">
+
+        <!-- EMAIL + SEND OTP -->
+        <div class="inline">
+          <input type="text" placeholder="Email" [(ngModel)]="email" name="email">
+          <button class="small-btn" [class.hidden]="!showSendOtp" (click)="showOtp()">Send</button>
+        </div>
+
+        <!-- PASSWORD -->
+        <input type="password" [class.hidden]="!showPassword" placeholder="Password" [(ngModel)]="password" name="password">
+
+        <!-- OTP -->
+        <input type="text" [class.hidden]="!showOtpField" placeholder="Enter OTP" [(ngModel)]="otp" name="otp">
+
+        <!-- BUTTONS -->
+        <button class="btn primary" [class.hidden]="!showLogin" (click)="login()">Login</button>
+        <button class="btn primary" [class.hidden]="!showVerifyOtp" (click)="verifyOtp()">Verify OTP</button>
+        <button class="btn primary" [class.hidden]="!showSignup" (click)="signup()">Create Account</button>
+
+      </div>
+
+      <p style="margin-top:20px;" (click)="openSignup()">Sign up?</p>
+      <button class="btn primary" (click)="toggle()">← Go Back</button>
+    </div>
+
+  </div>
+</div>
