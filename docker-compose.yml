@@ -1,5 +1,7 @@
+version: "3.9"
+
 services:
-  # Database and Kafka stack remain the same
+  # MySQL Database
   mysql:
     image: mysql:8.0
     container_name: mysql
@@ -13,35 +15,42 @@ services:
     networks:
       - zomaato
 
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.9.1
-    container_name: zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
-    networks:
-      - zomaato
-
+  # Kafka in KRaft mode
   kafka:
-    image: confluentinc/cp-kafka:7.9.1
+    image: confluentinc/cp-kafka:7.5.0
     container_name: kafka
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+      - ./kafka/kraft/server.properties:/etc/kafka/kraft/server.properties:ro
     ports:
       - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_KRAFT_MODE: "true"
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_NODE_ID: 1
+    command: >
+      bash -c '
+        if [ ! -f /var/lib/kafka/data/meta.properties ]; then
+          echo "Formatting Kafka storage..."
+          /usr/bin/kafka-storage format -t $(/usr/bin/kafka-storage random-uuid) -c /etc/kafka/kraft/server.properties;
+        fi
+        /usr/bin/kafka-server-start /etc/kafka/kraft/server.properties
+      '
     networks:
       - zomaato
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "kafka:9092"]
+      interval: 5s
+      retries: 10
 
+  # Kafka Connect
   kafka-connect:
     image: debezium/connect:2.5
     container_name: kafka-connect
@@ -66,8 +75,13 @@ services:
       - ./scripts/res.sh:/scripts/res.sh:ro
     networks:
       - zomaato
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8083/" ]
+      interval: 10s
+      retries: 10
 
-  # Microservices (Custom images now have build paths)
+
+  # Microservices
   eureka-service:
     build:
       context: ./EurekaService
@@ -179,6 +193,7 @@ services:
 
 volumes:
   mysql-data:
+  kafka-data:
 
 networks:
   zomaato:
