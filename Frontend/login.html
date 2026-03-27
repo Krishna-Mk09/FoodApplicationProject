@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Creative Pro Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgb(132, 209, 193), #9d7f49);
+        }
+
+        .container {
+            width: 800px;
+            height: 460px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .wrapper {
+            display: flex;
+            width: 200%;
+            height: 100%;
+            transition: transform 0.7s ease;
+        }
+
+        .panel {
+            width: 50%;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .left {
+            background: linear-gradient(135deg, #00c6ff, #101112);
+            color: white;
+        }
+
+        .right {
+            background: #fff;
+            color: #333;
+        }
+
+        h1 { font-size: 32px; margin-bottom: 15px; }
+        p { margin-bottom: 25px; opacity: 0.9; }
+
+        .btn {
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            margin-top: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .white-btn { background: white; color: #007BFF; }
+        .outline-btn { background: transparent; border: 1px solid white; color: white; }
+        .primary { background: #ffffff; color: #0078ff; }
+
+        .form input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        /* inline email + button */
+        .inline {
+            display: flex;
+            gap: 10px;
+        }
+
+        .inline input {
+            flex: 1;
+        }
+
+        .small-btn {
+            padding: 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            background: #ffffff;
+            color: #007bff;
+        }
+
+        .container.active .wrapper { transform: translateX(-50%); }
+
+        .container.active .left { background: #fff; color: #333; }
+
+        .container.active .right {
+            background: linear-gradient(135deg, #101112, #00c6ff);
+            color: white;
+        }
+
+        .container.active .right input {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+
+<body>
+
+<div class="container" id="container">
+    <div class="wrapper">
+
+        <!-- LEFT -->
+        <div class="panel left">
+            <h1>Welcome User 👋</h1>
+            <p>Access your dashboard using secure login options</p>
+
+            <button class="btn white-btn">Continue with Google</button>
+            <button class="btn outline-btn" onclick="openOtp()">Login with OTP</button>
+            <button class="btn white-btn" onclick="openPassword()">Sign In →</button>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="panel right">
+            <h1 id="formTitle">Sign In</h1>
+
+            <div class="form">
+
+                <!-- NAME (Signup only) -->
+                <input type="text" id="name" class="hidden" placeholder="Full Name">
+
+                <!-- EMAIL + SEND OTP -->
+                <div class="inline">
+                    <input type="text" id="email" placeholder="Email">
+                    <button class="small-btn hidden" id="sendOtpBtn" onclick="showOtp()">Send</button>
+                </div>
+
+                <!-- PASSWORD -->
+                <input type="password" id="password" placeholder="Password">
+
+                <!-- OTP -->
+                <input type="text" id="otpField" class="hidden" placeholder="Enter OTP">
+
+                <!-- BUTTONS -->
+                <button class="btn primary" id="loginBtn">Login</button>
+                <button class="btn primary hidden" id="verifyOtpBtn">Verify OTP</button>
+                <button class="btn primary hidden" id="signupBtn">Create Account</button>
+
+            </div>
+
+            <p style="margin-top:20px;" onclick="openSignup()" id="signupText">Sign up?</p>
+            <button class="btn primary" onclick="toggle()">← Go Back</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function toggle() {
+        document.getElementById("container").classList.toggle("active");
+    }
+
+    /* PASSWORD LOGIN */
+    function openPassword() {
+        toggle();
+
+        reset();
+
+        document.getElementById("formTitle").innerText = "Sign In";
+
+        document.getElementById("password").classList.remove("hidden");
+        document.getElementById("loginBtn").classList.remove("hidden");
+    }
+
+    /* OTP LOGIN */
+    function openOtp() {
+        toggle();
+
+        reset();
+
+        document.getElementById("formTitle").innerText = "Login with OTP";
+
+        document.getElementById("sendOtpBtn").classList.remove("hidden");
+    }
+
+    /* SHOW OTP */
+    function showOtp() {
+        document.getElementById("otpField").classList.remove("hidden");
+        document.getElementById("verifyOtpBtn").classList.remove("hidden");
+    }
+
+    /* SIGNUP */
+    function openSignup() {
+        reset();
+
+        document.getElementById("formTitle").innerText = "Create Account";
+
+        document.getElementById("name").classList.remove("hidden");
+        document.getElementById("password").classList.remove("hidden");
+        document.getElementById("signupBtn").classList.remove("hidden");
+    }
+
+    /* RESET ALL */
+    function reset() {
+        document.getElementById("name").classList.add("hidden");
+        document.getElementById("password").classList.add("hidden");
+        document.getElementById("otpField").classList.add("hidden");
+
+        document.getElementById("loginBtn").classList.add("hidden");
+        document.getElementById("verifyOtpBtn").classList.add("hidden");
+        document.getElementById("signupBtn").classList.add("hidden");
+        document.getElementById("sendOtpBtn").classList.add("hidden");
+    }
+</script>
+
+</body>
+</html>
