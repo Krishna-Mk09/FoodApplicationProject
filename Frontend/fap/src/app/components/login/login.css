@@ -1,0 +1,103 @@
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, rgb(132, 209, 193), #9d7f49);
+}
+
+.container {
+  width: 800px;
+  height: 460px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.wrapper {
+  display: flex;
+  width: 200%;
+  height: 100%;
+  transition: transform 0.7s ease;
+}
+
+.panel {
+  width: 50%;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.left {
+  background: linear-gradient(135deg, #00c6ff, #101112);
+  color: white;
+}
+
+.right {
+  background: #fff;
+  color: #333;
+}
+
+h1 { font-size: 32px; margin-bottom: 15px; }
+p { margin-bottom: 25px; opacity: 0.9; }
+
+.btn {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  margin-top: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.white-btn { background: white; color: #007BFF; }
+.outline-btn { background: transparent; border: 1px solid white; color: white; }
+.primary { background: #ffffff; color: #0078ff; }
+
+.form input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* inline email + button */
+.inline {
+  display: flex;
+  gap: 10px;
+}
+
+.inline input {
+  flex: 1;
+}
+
+.small-btn {
+  padding: 15px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #ffffff;
+  color: #007bff;
+}
+
+.container.active .wrapper { transform: translateX(-50%); }
+
+.container.active .left { background: #fff; color: #333; }
+
+.container.active .right {
+  background: linear-gradient(135deg, #101112, #00c6ff);
+  color: white;
+}
+
+.container.active .right input {
+  background: rgba(255,255,255,0.1);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.4);
+}
+
+.hidden { display: none; }
