@@ -17,6 +17,7 @@
     </parent>
 
     <modules>
+        <module>Common-Service</module>
         <module>ApiGatewayService</module>
         <module>DeliveryService</module>
         <module>EmailService</module>
@@ -125,11 +126,11 @@
         </dependency>
 
 
-        <!-- Redis -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
+<!--        &lt;!&ndash; Redis &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-data-redis</artifactId>-->
+<!--        </dependency>-->
 
 
     </dependencies>
