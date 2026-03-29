@@ -29,33 +29,53 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class JwtFilter extends GenericFilterBean {
-    @Value("${jwt.secret}")
-    private String secretKey;
+
+    private final String secretKey;
+
+    public JwtFilter(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         String path = httpRequest.getRequestURI();
-        if (path.matches("^/userAuthService/registerUser$") || path.matches("^/userAuthService/login$") || path.matches("^/userAuthService/send-otp/.*$") || path.matches("^/userAuthService/verify-otp/.*$") || path.matches("^/userAuthService/google/.*$") || path.matches("^/google/.*$") || path.matches("^/v3/api-docs/.*$") || path.matches("^/swagger-ui/.*$")) {
+
+        // ✅ Public endpoints - no JWT needed
+        if (path.startsWith("/userAuthService/registerUser") ||
+                path.startsWith("/userAuthService/login") ||
+                path.startsWith("/userAuthService/send-otp/") ||
+                path.startsWith("/userAuthService/verify-otp/") ||
+                path.startsWith("/google/") ||
+                path.startsWith("/v3/api-docs/") ||
+                path.startsWith("/error") ||
+                path.startsWith("/swagger-ui/")) {
             chain.doFilter(request, response);
             return;
         }
-        String authHeader = httpRequest.getHeader("Authorization");
+
         if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
             httpResponse.setStatus(HttpServletResponse.SC_OK);
             chain.doFilter(request, response);
             return;
         }
+
+        String authHeader = httpRequest.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing or invalid Authorization header");
             return;
         }
+
         String token = authHeader.substring(7);
         try {
             Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
-            List<GrantedAuthority> authorities = Arrays.stream(claims.get("role", String.class).split(",")).map(role -> new SimpleGrantedAuthority("ROLE_" + role)).collect(Collectors.toList());
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
+            List<GrantedAuthority> authorities = Arrays.stream(claims.get("role", String.class).split(","))
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                    .collect(Collectors.toList());
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(request, response);
         } catch (SignatureException e) {
