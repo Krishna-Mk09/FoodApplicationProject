@@ -52,6 +52,6 @@ public class GoogleAuthController {
         emailRequest.setTemplateName("welcome-email");
         emailRequest.setUserName(profile.getName());
         kafkaTemplate.send(TOPIC, profile.getEmail(), emailRequest);
-        response.sendRedirect("http://localhost:4200/login?token=" + jwtToken);
+        response.sendRedirect("http://100.31.91.234:4200/login?token=" + jwtToken);
     }
 }
