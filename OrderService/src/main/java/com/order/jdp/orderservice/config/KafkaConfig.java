@@ -1,5 +1,5 @@
 package com.order.jdp.orderservice.config;
-
+import org.springframework.beans.factory.annotation.Value;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
