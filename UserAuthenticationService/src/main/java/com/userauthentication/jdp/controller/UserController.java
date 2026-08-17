@@ -2,6 +2,7 @@ package com.userauthentication.jdp.controller;
 
 import com.foodapplication.jdp.Common_Service.Entity.UserDTO;
 import com.userauthentication.jdp.beans.UserUpdate;
+import com.userauthentication.jdp.beans.UsersDTO;
 import com.userauthentication.jdp.entity.User;
 import com.userauthentication.jdp.serviceImpl.UserServiceImpl;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -53,7 +54,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@Valid @RequestBody User users, HttpServletRequest request) throws Exception {
+    public ResponseEntity<?> loginUser(@Valid @RequestBody UsersDTO users, HttpServletRequest request) throws Exception {
         log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
         try {
             String token = this.userService.loginUser(users.getEmail(), users.getPassword(), request);
