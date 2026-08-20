@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.springframework.beans.factory.annotation.Value;
 import java.io.IOException;
 import java.util.Map;
 
@@ -31,6 +32,9 @@ public class GoogleAuthController {
     private static final String TOPIC = "email";
     private final UserServiceImpl userService;
     private final KafkaTemplate<String, EmailRequest> kafkaTemplate;
+
+    @Value("${google.frontend.url}")
+    private String frontendUrl;
 
     @GetMapping("/login")
     public void redirectToGoogle(HttpServletResponse response) throws IOException {
@@ -52,6 +56,6 @@ public class GoogleAuthController {
         emailRequest.setTemplateName("welcome-email");
         emailRequest.setUserName(profile.getName());
         kafkaTemplate.send(TOPIC, profile.getEmail(), emailRequest);
-        response.sendRedirect("http://100.31.91.234:4200/login?token=" + jwtToken);
+        response.sendRedirect(frontendUrl + jwtToken);
     }
 }
