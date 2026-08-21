@@ -36,6 +36,7 @@ public class UserMapper {
         dto.setLicenseNumber(user.getLicenseNumber());
         dto.setNoOfLoginAttempts(user.getNoOfLoginAttempts());
         dto.setIsActive(user.getIsActive());
+        dto.setProfilePhoto(user.getProfilePhoto());
         return dto;
     }
 }
