@@ -39,6 +39,7 @@ public class UserDTO {
     private String licenseNumber;
     private Integer noOfLoginAttempts;
     private Boolean isActive;
+    private byte[] profilePhoto;
     private List<AddressDTO> addresses;
 
 }

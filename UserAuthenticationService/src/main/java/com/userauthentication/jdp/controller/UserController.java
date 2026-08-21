@@ -117,4 +117,28 @@ public class UserController {
         }
     }
 
+    @PostMapping("/profile-photo")
+    public ResponseEntity<String> updateProfilePhoto(@RequestBody byte[] photo) throws Exception {
+        try {
+            UserDTO currentUser = userService.getCurrentUser();
+            userService.updateProfilePhoto(currentUser.getEmail(), photo);
+            return new ResponseEntity<>("Profile photo updated successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Exception occurred while updating profile photo: {}", ExceptionUtils.getStackTrace(e));
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/profile-photo")
+    public ResponseEntity<String> deleteProfilePhoto() throws Exception {
+        try {
+            UserDTO currentUser = userService.getCurrentUser();
+            userService.updateProfilePhoto(currentUser.getEmail(), null);
+            return new ResponseEntity<>("Profile photo removed successfully", HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Exception occurred while deleting profile photo: {}", ExceptionUtils.getStackTrace(e));
+            throw new Exception(e.getMessage());
+        }
+    }
+
 }

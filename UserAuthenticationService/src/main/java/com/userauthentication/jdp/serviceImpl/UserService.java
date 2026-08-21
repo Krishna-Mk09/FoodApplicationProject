@@ -26,4 +26,6 @@ public interface UserService {
 
     UserDTO getCurrentUser() throws Exception;
 
+    void updateProfilePhoto(String email, byte[] photo) throws Exception;
+
 }

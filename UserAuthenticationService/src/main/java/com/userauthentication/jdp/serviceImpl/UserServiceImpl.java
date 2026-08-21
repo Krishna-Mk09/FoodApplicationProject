@@ -297,4 +297,22 @@ public class UserServiceImpl implements UserService {
         String url = "https://www.googleapis.com/oauth2/v2/userinfo?access_token=" + accessToken;
         return restTemplate.getForObject(url, GoogleUserInfo.class);
     }
+
+    @Override
+    @Transactional
+    public void updateProfilePhoto(String email, byte[] photo) throws Exception {
+        try {
+            Optional<User> userOptional = userRepository.findByEmail(email);
+            if (userOptional.isPresent()) {
+                User user = userOptional.get();
+                user.setProfilePhoto(photo);
+                userRepository.save(user);
+            } else {
+                throw new Exception("User not found");
+            }
+        } catch (Exception e) {
+            log.error("Exception occurred while updating profile photo: {}", e.getMessage());
+            throw e;
+        }
+    }
 }
