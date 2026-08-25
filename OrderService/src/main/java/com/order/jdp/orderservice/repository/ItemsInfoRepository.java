@@ -1,14 +1,12 @@
 package com.order.jdp.orderservice.repository;
 
-
 import com.order.jdp.orderservice.entity.ItemsInfo;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-/*
- * Author Name : M.V.Krishna
- * Date: 06-09-2025
- * Created With: IntelliJ IDEA Ultimate Edition
- */
+import java.util.List;
+
 public interface ItemsInfoRepository extends JpaRepository<ItemsInfo, Long> {
+
+    List<ItemsInfo> findByRestaurantId(Long restaurantId);
 
 }

@@ -35,7 +35,6 @@ public class User {
     @NotNull
     @Column(name = "EMAIL", unique = true)
     private String email;
-    @NotNull
     @JsonProperty("phone_num")
     @Column(name = "PHONE_NUM", unique = true)
     private String phoneNum;

@@ -31,7 +31,10 @@ public class GatewayRoutesConfig {
                 )
 
                 .route("order-service", r -> r
-                        .path("/orders/**")
+                        .path(
+                                "/order/**",
+                                "/orders/**"
+                        )
                         .uri("lb://ORDER-SERVICE")
                 )
 

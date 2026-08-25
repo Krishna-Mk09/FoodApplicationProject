@@ -39,55 +39,67 @@ public class UserController {
         }
     }
 
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "success")})
+    @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "success")})
     @PostMapping("/registerUser")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody User user) throws Exception {
-        log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        log.info("UserController.registerUser: email={} userName={}", user != null ? user.getEmail() : "null", user != null ? user.getUserName() : "null");
         try {
-            log.info("User Controller.registerUser: userId {} userName{}", user.getUserId(), user.getUserName());
             String savedUser = this.userService.saveUser(user);
             return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            log.warn("Registration validation failed: {}", e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            log.error(" Exception occurred while saving user details {} ", ExceptionUtils.getStackTrace(e));
-            throw new Exception(e.getMessage());
+            log.error("Exception occurred while saving user details: {}", ExceptionUtils.getStackTrace(e));
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@Valid @RequestBody UsersDTO users, HttpServletRequest request) throws Exception {
-        log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
+    public ResponseEntity<?> loginUser(@RequestBody UsersDTO users, HttpServletRequest request) {
+        log.info("UserController.login: email={}", users != null ? users.getEmail() : "null");
         try {
+            if (users == null) {
+                return new ResponseEntity<>("Request body cannot be null", HttpStatus.BAD_REQUEST);
+            }
             String token = this.userService.loginUser(users.getEmail(), users.getPassword(), request);
             return new ResponseEntity<>(token, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.warn("Login failed: {}", e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            log.error(" Exception occurred   while user log in {}", ExceptionUtils.getStackTrace(e));
-            throw new Exception(e.getMessage());
+            log.error("Exception occurred while user login: {}", ExceptionUtils.getStackTrace(e));
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/send-otp/{email}")
-    public ResponseEntity<?> sendOtp(@Valid @PathVariable("email") String email, HttpServletRequest request) throws Exception {
-        log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
+    public ResponseEntity<?> sendOtp(@PathVariable("email") String email, HttpServletRequest request) {
+        log.info("UserController.sendOtp: email={}", email);
         try {
-            log.info("User Controller.login: user: ");
-            String token = this.userService.sendOtp(email, request);
-            log.info("User logged inn: user: ");
-            return new ResponseEntity<>(token, HttpStatus.OK);
+            String result = this.userService.sendOtp(email, request);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.warn("Send OTP failed: {}", e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            log.error(" Exception   occurred while user log in {}", ExceptionUtils.getStackTrace(e));
-            throw new Exception(e.getMessage());
+            log.error("Exception occurred while sending OTP: {}", ExceptionUtils.getStackTrace(e));
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("/verify-otp/{email}/{otp}")
-    public ResponseEntity<String> verifyOtp(@Valid @PathVariable("email") String email, @PathVariable("otp") int otp) throws Exception {
-        log.info(this.getClass().getSimpleName(), Thread.currentThread().getStackTrace()[1].getMethodName());
+    public ResponseEntity<?> verifyOtp(@PathVariable("email") String email, @PathVariable("otp") int otp) {
+        log.info("UserController.verifyOtp: email={}", email);
         try {
-            String str = this.userService.verifyOtp(email, otp);
-            return new ResponseEntity<>(str, HttpStatus.OK);
+            String token = this.userService.verifyOtp(email, otp);
+            return new ResponseEntity<>(token, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            log.warn("Verify OTP failed: {}", e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            log.error(" Exception occurred while user log in {}", ExceptionUtils.getStackTrace(e));
-            throw new Exception(e.getMessage());
+            log.error("Exception occurred while verifying OTP: {}", ExceptionUtils.getStackTrace(e));
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

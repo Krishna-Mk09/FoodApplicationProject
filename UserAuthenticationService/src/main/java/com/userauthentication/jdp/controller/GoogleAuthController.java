@@ -50,12 +50,16 @@ public class GoogleAuthController {
         Map<String, String> tokenResponse = userService.exchangeCodeForToken(code);
         GoogleUserInfo profile = userService.fetchUserProfile(tokenResponse.get("access_token"));
         String jwtToken = userService.handleGoogleLogin(profile);
-        EmailRequest emailRequest = new EmailRequest();
-        emailRequest.setSenderEmail(profile.getEmail());
-        emailRequest.setSubject("Registration Acknowledgement");
-        emailRequest.setTemplateName("welcome-email");
-        emailRequest.setUserName(profile.getName());
-        kafkaTemplate.send(TOPIC, profile.getEmail(), emailRequest);
+        try {
+            EmailRequest emailRequest = new EmailRequest();
+            emailRequest.setSenderEmail(profile.getEmail());
+            emailRequest.setSubject("Registration Acknowledgement");
+            emailRequest.setTemplateName("welcome-email");
+            emailRequest.setUserName(profile.getName());
+            kafkaTemplate.send(TOPIC, profile.getEmail(), emailRequest);
+        } catch (Exception e) {
+            log.warn("Could not publish welcome email event to Kafka: {}", e.getMessage());
+        }
         response.sendRedirect(frontendUrl + jwtToken);
     }
 }

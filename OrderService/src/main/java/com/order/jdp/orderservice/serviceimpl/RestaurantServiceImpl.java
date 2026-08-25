@@ -15,6 +15,9 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -23,6 +26,24 @@ public class RestaurantServiceImpl implements RestaurantService {
     private final ItemsInfoRepository itemsInfoRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    public List<RestaurantInfo> getAllRestaurants() {
+        log.info("Fetching all restaurants from repository");
+        return restaurantRepository.findAll();
+    }
+
+    @Override
+    public Optional<RestaurantInfo> getRestaurantById(Long id) {
+        log.info("Fetching restaurant by ID: {}", id);
+        return restaurantRepository.findById(id);
+    }
+
+    @Override
+    public List<ItemsInfo> getRestaurantMenu(Long restaurantId) {
+        log.info("Fetching menu for restaurant ID: {}", restaurantId);
+        return itemsInfoRepository.findByRestaurantId(restaurantId);
+    }
 
     @KafkaListener(topics = {"foodapp.food_application_platform.restaurants", "foodapp.food_application_platform.menu"}, groupId = "orderservice")
     public void consumeDebeziumEvent(String message, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
@@ -43,14 +64,14 @@ public class RestaurantServiceImpl implements RestaurantService {
                                 if (after != null && !after.isNull()) {
                                     RestaurantInfo restaurant = objectMapper.treeToValue(after, RestaurantInfo.class);
                                     restaurantRepository.save(restaurant);
-                                    System.out.println("Saved/Updated Restaurant: " + restaurant);
+                                    log.info("Saved/Updated Restaurant: {}", restaurant);
                                 }
                                 break;
                             case "d":
                                 if (before != null && !before.isNull()) {
                                     Long id = before.get("restaurant_id").asLong();
                                     restaurantRepository.deleteById(id);
-                                    System.out.println("Deleted Restaurant ID: " + id);
+                                    log.info("Deleted Restaurant ID: {}", id);
                                 }
                                 break;
                         }
@@ -62,14 +83,14 @@ public class RestaurantServiceImpl implements RestaurantService {
                                 if (after != null && !after.isNull()) {
                                     ItemsInfo item = objectMapper.treeToValue(after, ItemsInfo.class);
                                     itemsInfoRepository.save(item);
-                                    System.out.println("Saved/Updated Item: " + item);
+                                    log.info("Saved/Updated Item: {}", item);
                                 }
                                 break;
                             case "d":
                                 if (before != null && !before.isNull()) {
                                     Long id = before.get("item_id").asLong();
                                     itemsInfoRepository.deleteById(id);
-                                    System.out.println("Deleted Item ID: " + id);
+                                    log.info("Deleted Item ID: {}", id);
                                 }
                                 break;
                         }

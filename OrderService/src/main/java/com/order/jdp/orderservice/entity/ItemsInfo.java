@@ -1,31 +1,31 @@
 package com.order.jdp.orderservice.entity;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/*
- * Author Name : M.V.Krishna
- * Date: 06-09-2025
- * Created With: IntelliJ IDEA Ultimate Edition
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
+@Table(name = "MENU")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ItemsInfo {
 
     @Id
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "restaurant_id")
+    @Column(name = "RESTAURANT_ID")
+    @JsonProperty("restaurantId")
     private Long restaurantId;
 
     @Column(name = "name")
@@ -44,15 +44,32 @@ public class ItemsInfo {
     private String category;
 
     @Column(name = "image_url")
-    private String ImageUrl;
+    @JsonProperty("imageUrl")
+    private String imageUrl;
 
     @Column(name = "timestamp")
     private String timestamp;
 
-    @Column(name = "isVeg")
+    @Column(name = "is_veg")
+    @JsonProperty("isVeg")
     private Boolean isVeg;
 
-    @Column(name = "isAvailable")
+    @Column(name = "is_available")
+    @JsonProperty("isAvailable")
     private Boolean isAvailable;
 
+    @JsonProperty("image")
+    public String getImage() {
+        return imageUrl;
+    }
+
+    @JsonProperty("rating")
+    public Double getRating() {
+        return 4.5;
+    }
+
+    @JsonProperty("votes")
+    public Integer getVotes() {
+        return 20;
+    }
 }
