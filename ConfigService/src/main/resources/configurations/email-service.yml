@@ -1,0 +1,41 @@
+# ====================================================
+# EmailService - Service-Specific Config
+# ====================================================
+server:
+  port: 8083
+
+spring:
+  application:
+    name: email-service
+  # --- Mail ---
+  mail:
+    protocol: smtp
+    host: ${MAIL_HOST:in-v3.mailjet.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:zomaato.fap@gmail.com}
+    password: ${MAIL_PASSWORD:nyvmalzoxwajidsy}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+  # --- Thymeleaf ---
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+
+# EmailService uses jersey-style eureka config
+eureka:
+  client:
+    jersey:
+      enabled: true
+    fetch-registry: true
+    register-with-eureka: true

@@ -1,0 +1,19 @@
+# ====================================================
+# UserAuthenticationService - Service-Specific Config
+# ====================================================
+server:
+  port: 8086
+
+spring:
+  application:
+    name: user-authentication-service
+
+# --- Google OAuth ---
+google:
+  client:
+    id: ${GOOGLE_CLIENT_ID:214785903268-38u5f7t39am52miefl2o9rbrl19bulam.apps.googleusercontent.com}
+    secret: ${GOOGLE_CLIENT_SECRET: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}
+  redirect:
+    uri: ${GOOGLE_REDIRECT_URI:http://100.31.91.234:8086/google/callback}
+  frontend:
+    url: ${GOOGLE_FRONTEND_URL:http://100.31.91.234:4200/login?token=}

@@ -1,0 +1,9 @@
+# ====================================================
+# NotificationService - Service-Specific Config
+# ====================================================
+server:
+  port: 8282
+
+spring:
+  application:
+    name: notification-service

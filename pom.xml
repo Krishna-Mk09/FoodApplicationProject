@@ -18,6 +18,7 @@
 
     <modules>
         <module>Common-Service</module>
+        <module>ConfigService</module>
         <module>ApiGatewayService</module>
         <module>DeliveryService</module>
         <module>EmailService</module>

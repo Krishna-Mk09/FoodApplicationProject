@@ -1,0 +1,15 @@
+# ====================================================
+# PaymentService - Service-Specific Config
+# ====================================================
+server:
+  port: 8084
+
+spring:
+  application:
+    name: payment-service
+
+# --- Razorpay ---
+razorpay:
+  key:
+    id: ${RAZORPAY_KEY_ID:rzp_test_RCbHeF5jZhvhmX}
+    secret: ${RAZORPAY_KEY_SECRET:LhL75R4RicWxiG7yNxnctHRQ}

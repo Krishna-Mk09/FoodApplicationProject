@@ -7,11 +7,11 @@
 		<artifactId>FoodApplicationProject</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
-	<groupId>com.payment.jdp</groupId>
-	<artifactId>PaymentService</artifactId>
+	<groupId>com.configservice.jdp</groupId>
+	<artifactId>ConfigService</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>PaymentService</name>
-	<description>Demo project for Spring Boot</description>
+	<name>ConfigService</name>
+	<description>Spring Cloud Config Server for centralized configuration</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -32,33 +32,14 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			<artifactId>spring-cloud-config-server</artifactId>
 		</dependency>
 
-		<!-- Spring Cloud Config Client -->
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-config</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
-			<scope>runtime</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.razorpay/razorpay-java -->
-		<dependency>
-			<groupId>com.razorpay</groupId>
-			<artifactId>razorpay-java</artifactId>
-			<version>1.4.5</version>
-		</dependency>
-
-
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

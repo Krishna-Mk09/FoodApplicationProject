@@ -4,10 +4,8 @@ import com.foodapplication.jdp.Common_Service.Entity.UserDTO;
 import com.foodapplication.jdp.Common_Service.Service.SequenceService;
 import com.restaurant.jdp.RestaurantService.entity.Menu;
 import com.restaurant.jdp.RestaurantService.entity.Restaurant;
-import com.restaurant.jdp.RestaurantService.entity.RestaurantLicence;
-import com.restaurant.jdp.RestaurantService.entity.RestaurantOwner;
-import com.restaurant.jdp.RestaurantService.repository.LicenceRepository;
-import com.restaurant.jdp.RestaurantService.repository.OwnerRepository;
+//import com.restaurant.jdp.RestaurantService.repository.LicenceRepository;
+//import com.restaurant.jdp.RestaurantService.repository.OwnerRepository;
 import com.restaurant.jdp.RestaurantService.repository.RestaurantRepository;
 import com.restaurant.jdp.RestaurantService.service.RestaurantService;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +25,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RestaurantServiceImpl implements RestaurantService {
     private final RestaurantRepository restaurantRepository;
-    private final LicenceRepository licenceRepository;
-    private final OwnerRepository ownerRepository;
+//    private final LicenceRepository licenceRepository;
+//    private final OwnerRepository ownerRepository;
     private final SequenceService sequenceService;
 
 
@@ -48,13 +46,13 @@ public class RestaurantServiceImpl implements RestaurantService {
                 restaurant.setRestaurantId(restaurantsId);
             }
 
-            RestaurantOwner owner = RestaurantOwner.builder().ownerId(sequenceService.getSequenceByCustomer("RESTAURANT_OWNERS")).userId(currentUser.getUserId()).email(currentUser.getSecondaryEmail()).phoneNumber(currentUser.getPhoneNum()).restaurantId(restaurant.getRestaurantId()).build();
-            ownerRepository.save(owner);
-            restaurant.setOwner(owner);
+//            RestaurantOwner owner = RestaurantOwner.builder().ownerId(sequenceService.getSequenceByCustomer("RESTAURANT_OWNERS")).userId(currentUser.getUserId()).email(currentUser.getSecondaryEmail()).phoneNumber(currentUser.getPhoneNum()).restaurantId(restaurant.getRestaurantId()).build();
+//            ownerRepository.save(owner);
+//            restaurant.setOwner(owner);
 
-            RestaurantLicence licence = RestaurantLicence.builder().licenceId(sequenceService.getSequenceByCustomer("RESTAURANT_LICENCES")).restaurantId(restaurant.getRestaurantId()).licenceName(currentUser.getNameAsInLicense()).nameAsInLicense(currentUser.getNameAsInLicense()).licenceNumber(currentUser.getLicenseNumber()).userId(currentUser.getUserId()).build();
-            licenceRepository.save(licence);
-            restaurant.setRestaurantLicence(licence);
+//            RestaurantLicence licence = RestaurantLicence.builder().licenceId(sequenceService.getSequenceByCustomer("RESTAURANT_LICENCES")).restaurantId(restaurant.getRestaurantId()).licenceName(currentUser.getNameAsInLicense()).nameAsInLicense(currentUser.getNameAsInLicense()).licenceNumber(currentUser.getLicenseNumber()).userId(currentUser.getUserId()).build();
+//            licenceRepository.save(licence);
+//            restaurant.setRestaurantLicence(licence);
 
             if (restaurant.getMenuList() != null) {
                 for (Menu item : restaurant.getMenuList()) {
@@ -173,10 +171,10 @@ public class RestaurantServiceImpl implements RestaurantService {
     public void deleteRestaurant(long id) {
         try {
             Restaurant restaurant = restaurantRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Restaurant not found with ID: " + id));
-            if (restaurant.getOwner() != null) ownerRepository.deleteById(restaurant.getOwner().getOwnerId());
-            if (restaurant.getRestaurantLicence() != null)
-                licenceRepository.deleteById(restaurant.getRestaurantLicence().getLicenceId());
-            restaurantRepository.deleteById(id);
+//            if (restaurant.getOwner() != null) ownerRepository.deleteById(restaurant.getOwner().getOwnerId());
+//            if (restaurant.getRestaurantLicence() != null)
+//                licenceRepository.deleteById(restaurant.getRestaurantLicence().getLicenceId());
+//            restaurantRepository.deleteById(id);
         } catch (Exception e) {
             log.error(" Exception occurred while deleting restaurant details {} ", ExceptionUtils.getStackTrace(e));
             throw new IllegalArgumentException("Restaurant not found with ID: " + id);
