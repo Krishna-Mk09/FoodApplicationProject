@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title class="welcome">Welcome to Food Application Platform Services</title>
     <style>
         body {
@@ -12,15 +13,14 @@
         }
         .welcome{
             color:#e74c3c;
-
         }
         .container {
             max-width: 550px;
             margin: auto;
-            background: #a3b1b1;
+            background: #f7fbfb;
             padding: 25px;
             text-align: center;
-            border-radius: 10px;
+            border-radius: 20px;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Increased shadow for depth */
         }
         h2 {
@@ -50,6 +50,26 @@
             font-size: 12px;
             color: #777;
             margin-top: 30px;
+        }
+
+        /* Media Queries for responsive design */
+        @media only screen and (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            p {
+                font-size: 14px;
+            }
+            .button {
+                display: block;
+                width: 100%;
+                box-sizing: border-box;
+            }
         }
     </style>
 </head>
