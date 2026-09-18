@@ -1,0 +1,39 @@
+# ====================================================
+# user-authentication-service - LOCAL DEV Profile
+# Uses H2 in-memory database (no MySQL needed)
+# Run with: --spring.profiles.active=local
+# ====================================================
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:userAuthDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  # Disable Kafka for local dev (no broker running)
+  kafka:
+    bootstrap-servers: localhost:9092
+    listener:
+      auto-startup: false
+
+# Disable Eureka for local dev
+eureka:
+  client:
+    enabled: false
+    registerWithEureka: false
+    fetchRegistry: false
+
+spring:
+  kafka:
+    admin:
+      auto-create: false
