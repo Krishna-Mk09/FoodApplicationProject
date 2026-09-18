@@ -1,10 +1,9 @@
 package com.order.jdp.orderservice.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import java.util.List;
+import java.util.ArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,5 +30,11 @@ public class Cart {
 
     @Column(name = "RESTAURANT_ID", nullable = false)
     private Long restaurantId;
+
+    @Column(name = "TOTAL_AMOUNT")
+    private Double totalAmount = 0.0;
+
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<CartItem> cartItems = new ArrayList<>();
 
 }
