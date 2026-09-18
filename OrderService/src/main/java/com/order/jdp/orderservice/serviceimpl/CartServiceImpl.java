@@ -10,6 +10,7 @@ import com.order.jdp.orderservice.repository.CartRepository;
 import com.order.jdp.orderservice.repository.ItemsInfoRepository;
 import com.order.jdp.orderservice.service.CartService;
 import com.order.jdp.orderservice.service.OrderService;
+import com.order.jdp.orderservice.client.PaymentClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class CartServiceImpl implements CartService {
     private final CartItemRepository cartItemRepository;
     private final ItemsInfoRepository itemsInfoRepository;
     private final OrderService orderService;
+    private final PaymentClient paymentClient;
 
     @Override
     public Cart getCart(long userId) {
@@ -151,6 +153,19 @@ public class CartServiceImpl implements CartService {
             orderItems.add(oi);
         }
         order.setOrderItems(orderItems);
+
+        // Generate Razorpay Order
+        try {
+            int amountInPaise = (int) (order.getOrderTotalAmount() * 100);
+            java.util.Map<String, Object> paymentResponse = paymentClient.createOrder(amountInPaise, "INR", "receipt_" + userId + "_" + System.currentTimeMillis());
+            if ("success".equals(paymentResponse.get("status"))) {
+                order.setRazorpayOrderId((String) paymentResponse.get("orderId"));
+            } else {
+                log.error("Failed to generate Razorpay order: {}", paymentResponse.get("message"));
+            }
+        } catch (Exception e) {
+            log.error("Exception calling PaymentService: {}", e.getMessage());
+        }
 
         Order savedOrder = orderService.createOrder(order);
         clearCart(userId);

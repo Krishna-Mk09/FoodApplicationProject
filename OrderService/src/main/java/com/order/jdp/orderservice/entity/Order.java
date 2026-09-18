@@ -43,6 +43,9 @@ public class Order {
     @Column(name = "ORDER_RATING")
     private long orderRating;
 
+    @Column(name = "RAZORPAY_ORDER_ID")
+    private String razorpayOrderId;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Fetch(value = FetchMode.SUBSELECT)
     private List<OrderItems> orderItems;

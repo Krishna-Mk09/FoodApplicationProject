@@ -42,6 +42,11 @@
             <artifactId>spring-cloud-starter-config</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
         <!-- MySQL Dependency for your database -->
         <dependency>
             <groupId>com.mysql</groupId>
